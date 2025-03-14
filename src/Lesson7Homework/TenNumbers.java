@@ -1,5 +1,4 @@
 package Lesson7Homework;
-
 public class TenNumbers {
     public static void main(String[] args) {
         int nr = 0;
