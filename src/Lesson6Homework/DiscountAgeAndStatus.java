@@ -9,10 +9,9 @@ public class DiscountAgeAndStatus {
         int age = scanner.nextInt();
         System.out.print("Is the person married? (true/false): ");
         boolean isMarried = scanner.nextBoolean();
-        String result = isMarried ?
-                "Is eligible for discount." :
-                (age < 18 ? "Is not eligible for discount." : "Is not eligible for discount.");
+        String result = (age < 18) ?
+                (isMarried ? "Is eligible for discount." : "Is not eligible for discount.") :
+                (isMarried ? "Is eligible for discount." : "Is not eligible for discount.");
         System.out.println(result);
-
     }
 }
