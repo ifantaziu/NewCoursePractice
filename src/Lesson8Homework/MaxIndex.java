@@ -3,7 +3,7 @@ package Lesson8Homework;
 public class MaxIndex {
 
     public static void main(String[] args) {
-        int[] anArray = {65, 245, 2334, 33, 19, 9876, 54, 75};
+        int[] anArray = {65, 245, 2334, 10000, 33, 19, 9876, 54, 10000, 75};
         //  for (int i = 0; i < anArray.length; i++) {
         //      anArray[i] = (i + 3) * 5;
         //  }
@@ -17,14 +17,15 @@ public class MaxIndex {
                 max = value;
             }
         }
-        System.out.println("Max Number = " + max);
+
         int indexMax = 0;
         for (int i = 0; i < anArray.length; i++) {
             if (anArray[i] == max) {
-                max = anArray[i];
                 indexMax = i;
+                break;
             }
         }
+        System.out.println("Max Number = " + max);
         System.out.println("Index of Max Number = " + indexMax);
     }
 }
