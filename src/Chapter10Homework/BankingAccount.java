@@ -13,7 +13,6 @@ public class BankingAccount {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
-        // Creating account objects
         BankingAccount acc01 = new BankingAccount(345678, 5000);
         BankingAccount acc02 = new BankingAccount(345679, 350);
         BankingAccount acc03 = new BankingAccount(345680, 1200);
