@@ -6,10 +6,11 @@ public class BankingAccount {
     private double accountBalance;
     public int id;
 
-    BankingAccount(int id, double accountBalance) {
+    public BankingAccount(int id, double accountBalance) {
         this.id = id;
         this.accountBalance = accountBalance;
     }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
 
