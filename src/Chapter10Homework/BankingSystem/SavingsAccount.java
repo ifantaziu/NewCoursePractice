@@ -8,8 +8,8 @@ class SavingsAccount extends BankingAccountAdm {
     private LocalDate lastWithdrawalDate=null;
     private LocalDate lastInterestAppliedDate=null;
 
-    public SavingsAccount(String iban, String accountHolderName, double accountBalance) {
-        super(iban, accountHolderName, accountBalance);
+    public SavingsAccount(String iban, String accountHolderName, double initialAccountBalance) {
+        super(iban, accountHolderName, initialAccountBalance);
 
     }
 
@@ -22,11 +22,11 @@ class SavingsAccount extends BankingAccountAdm {
             return;
         }
         double monthlyInterestRate = ANNUAL_INTEREST_RATE / 12;
-        double interest = getAccountBalance() * monthlyInterestRate;
-        accountBalance += interest;
+        double interest = getInitialAccountBalance() * monthlyInterestRate;
+        finalAccountBalance =initialAccountBalance+ interest;
         lastInterestAppliedDate = today;
         System.out.println("For " + today.getMonth() + ", you earned interest: " +
-                interest + " RON | New balance on your account #"+getIban()+": " + getAccountBalance() + " RON");
+                interest + " RON | New balance on your account #"+getIban()+": " + getFinalAccountBalance() + " RON");
     }
 
     @Override
@@ -38,13 +38,13 @@ class SavingsAccount extends BankingAccountAdm {
             System.out.println("Withdrawal failed! You have exceeded your limit for this month.");
             return;
         }
-        if (withdrawalAmount > 0 && withdrawalAmount <= getAccountBalance()) {
-            accountBalance -= withdrawalAmount;
+        if (withdrawalAmount > 0 && withdrawalAmount <= getInitialAccountBalance()) {
+           finalAccountBalance= initialAccountBalance - withdrawalAmount;
             withdrawalCount++;
             lastWithdrawalDate = today;
-            System.out.println("Withdrawal successful! The balance on your account #" + getIban() + " is: " + getAccountBalance() + " RON");
+            System.out.println("Withdrawal successful! The balance on your account #" + getIban() + " is: " + getFinalAccountBalance() + " RON");
         } else {
-            System.out.println("Not enough funds. The balance on your account #" + getIban() + " is: " + getAccountBalance() + " RON");
+            System.out.println("Not enough funds. The balance on your account #" + getIban() + " is: " + getInitialAccountBalance() + " RON");
         }
     }
 }
