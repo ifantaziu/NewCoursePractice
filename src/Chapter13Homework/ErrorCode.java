@@ -6,16 +6,19 @@ public enum ErrorCode {
     SERVER_ERROR(503, "The server cannot handle the request, because it is overloaded or down for maintenance");
     private final int code;
     private final String message;
+
     ErrorCode(int code, String message) {
         this.code = code;
         this.message = message;
     }
+
     public static ErrorCode fromCode(int code) {
         for (ErrorCode errorCode : values()) {
             if (errorCode.code == code) return errorCode;
         }
         return null;
     }
+
     public String getUserMessage() {
         switch (this) {
             case INVALID_INPUT:
@@ -47,9 +50,11 @@ public enum ErrorCode {
                 return "No fixing actions needed.";
         }
     }
+
     public int getCode() {
         return code;
     }
+
     public String getMessage() {
         return message;
     }

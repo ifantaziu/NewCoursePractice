@@ -61,6 +61,4 @@ public enum DaysOfWeek {
                 return null;
         }
     }
-
-
 }

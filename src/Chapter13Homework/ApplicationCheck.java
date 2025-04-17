@@ -1,6 +1,7 @@
 package Chapter13Homework;
 
 public class ApplicationCheck {
+
     public static void main(String[] args) {
         ErrorCode errorCode = ErrorCode.fromCode(400);
         if (errorCode != null) {

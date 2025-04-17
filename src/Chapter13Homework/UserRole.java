@@ -1,6 +1,7 @@
 package Chapter13Homework;
 
 public enum UserRole {
+
     ADMIN(100, "You have access to read, copy and modify"),
     MODERATOR(200, "You have access to read and copy"),
     USER(300, "You have read-only access");

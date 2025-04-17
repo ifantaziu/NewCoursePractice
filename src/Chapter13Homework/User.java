@@ -10,10 +10,12 @@ public class User {
     }
 
     public String getName() {
+
         return name;
     }
 
     public UserRole getRole() {
+
         return role;
     }
 
