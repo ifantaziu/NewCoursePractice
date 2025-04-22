@@ -6,8 +6,10 @@ public class MainCompany {
         Company.Department dept = new Company.Department("Finance");
         Company.Employee employee = company.new Employee("Maria");
         company.printDepartmentInfo(dept);
-        if (!employee.validateName()) {
-            company.printEmpployeeInfo(employee);
+        if (employee.validateName()) {
+            company.printEmployeeInfo(employee);
+        } else {
+            System.out.println("Employee name is invalid.");
         }
     }
 }

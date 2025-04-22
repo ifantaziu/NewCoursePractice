@@ -11,7 +11,7 @@ public class Company {
         System.out.println("Company: " + name + ", Department: " + dept.getName());
     }
 
-    public void printEmpployeeInfo(Employee emp) {
+    public void printEmployeeInfo(Employee emp) {
         System.out.println("Company: " + name + ", Employee: " + emp.getName());
     }
 
@@ -38,19 +38,15 @@ public class Company {
             return name;
         }
 
-
         public boolean validateName() {
-            HRTool hrtool = new HRTool();
-            return hrtool.nameValidation(name);
+            HRTool hrTool = new HRTool();
+            return hrTool.nameValidation(name);
         }
-
 
         private class HRTool {
             public boolean nameValidation(String name) {
                 int nameLength = name.trim().length();
-                boolean validation = false;
-                if (nameLength < 3) ;
-                return validation;
+                return nameLength >= 3;
             }
         }
     }
