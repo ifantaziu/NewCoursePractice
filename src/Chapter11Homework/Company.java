@@ -1,6 +1,7 @@
 package Chapter11Homework;
 
 public class Company {
+
     private String name;
 
     public Company(String name) {
