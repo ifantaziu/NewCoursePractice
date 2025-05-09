@@ -6,7 +6,7 @@ public class Test {
         User user1 = Onboarding.onboardNewUser();
         User user2 = Onboarding.onboardNewUser();
 
-        System.out.println( "----------------------------"+
+        System.out.println("----------------------------" +
                 "\n--- All Registered Users ---");
         UserRegistry.listAllUsers();
     }
