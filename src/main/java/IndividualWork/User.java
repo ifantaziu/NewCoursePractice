@@ -1,15 +1,11 @@
 package IndividualWork;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 public class User extends Person {
     private final String bankClientId;
     private final String email;
     private final String phoneNumber;
-    private String username;
-    private String password;
+    private final String username;
+    private final String password;
 
     public User(String fullName, String idNo, String email, String phoneNumber, String username, String password) {
         super(fullName, idNo);
@@ -44,10 +40,10 @@ public class User extends Person {
     public String toString() {
         return "Client name: " + getFullName() +
                 "\nIDNO:" + getIdNo() +
-                "\nBank Client ID: " + bankClientId +
+                "\nBank Client ID: " + getBankClientId() +
                 "\nUsername: " + getUsername() +
-                "\nEmail: " + email +
-                "\nPhone: " + phoneNumber;
+                "\nEmail: " + getEmail() +
+                "\nPhone: " + getPhoneNumber();
     }
 
 }

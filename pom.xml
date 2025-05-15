@@ -6,10 +6,16 @@
     <modelVersion>4.0.0</modelVersion>
 
     <!-- Informații despre proiect -->
-    <groupId>com.exemplu</groupId>
-    <artifactId>proiectul-meu</artifactId>
+    <groupId>org.exemplu</groupId>
+    <artifactId>NewCoursePractice</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>jar</packaging>
+
+    <properties>
+        <maven.compiler.sources>17</maven.compiler.sources>
+        <maven.compiler.target>17</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
     <!-- Repositories, pentru cazuri când sunt folosite repository-uri externe -->
     <repositories>

@@ -2,51 +2,68 @@ package IndividualWork;
 
 import java.util.Scanner;
 
-import static IndividualWork.UserRegistry.getInvalidEmailInputMessage;
-import static IndividualWork.UserRegistry.isValidEmail;
+import static IndividualWork.UserRegistry.*;
 
 public class Onboarding {
+    private static final Scanner scanner = new Scanner(System.in);
+
     public static User onboardNewUser() {
-        Scanner scanner = new Scanner(System.in);
+        System.out.print("Welcome to your lifetime bank! ");
+        String fullName = onboardFullName();
+        String idNo = onboardIdNo();
+        String email = onboardEmail();
+        String phone = onboardPhone();
+        String username = onboardUsername();
+        String password = onboardPassword();
+        // Create user
+        User user = new User(fullName, idNo, email, phone, username, password);
 
-        System.out.print("Welcome to your lifetime bank! " +
-                "\nFor registration, please enter full name: ");
-        String fullName = scanner.nextLine();
+        // Register user
+        UserRegistry.registerUser(user);
 
-        String idNo;
+        System.out.println("\n User created successfully:");
+        System.out.println(user);
+
+        return user;
+    }
+
+    public static String onboardFullName() {
+        System.out.print("For registration, please enter full name: ");
+        return scanner.nextLine();
+    }
+
+    public static String onboardIdNo() {
         while (true) {
             System.out.print("Enter personal ID number (IDNO) with 13 digits: ");
-            idNo = scanner.nextLine();
+            String idNo = scanner.nextLine();
             if (!idNo.matches("^[0-9]{13}$")) {
-                System.out.println("Error: The IDNO should contain digits only.");
+                System.out.println("Error: The IDNO should contain  exactly 13 digits.");
                 continue;
             }
-            if (idNo.length() != 13) {
-                System.out.println("Error: The IDNO must have exactly 13 digits.");
-            } else {
-                System.out.println("IDNO accepted: " + idNo);
-                break;
-            }
+            System.out.println("IDNO accepted: " + idNo);
+            return idNo;
         }
+    }
 
-        String email;
+    public static String onboardEmail() {
         while (true) {
             System.out.print("Enter email (e.g.examplename@mail.com): ");
-            email = scanner.nextLine();
+            String email = scanner.nextLine();
 
             if (isValidEmail(email)) {
                 System.out.println("Email accepted: " + email);
-                break;
+                return email;
             } else {
                 String errorMessage = getInvalidEmailInputMessage(email);
                 System.out.println(errorMessage);
             }
         }
+    }
 
-        String phone;
+    public static String onboardPhone() {
         while (true) {
             System.out.print("Enter local phone number starting with 0: ");
-            phone = scanner.nextLine();
+            String phone = scanner.nextLine();
             if (!phone.matches("^[0-9]+$")) {
                 System.out.println("Error: The phone number should contain digits only.");
                 continue;
@@ -59,32 +76,41 @@ public class Onboarding {
                 System.out.println("Error: The phone number must have exactly 9 digits.");
             } else {
                 System.out.println("Phone number accepted: " + phone);
-                break;
+                return phone;
             }
         }
-
-        String username;
-        do {
-            System.out.print("Choose a username: ");
-            username = scanner.nextLine();
-            if (UserRegistry.usernameExists(username)) {
-                System.out.println("Username already exists. Please choose another.");
-            }
-        } while (UserRegistry.usernameExists(username));
-
-        System.out.print("Choose a password: ");
-        String password = scanner.nextLine();
-
-        // Create user
-        User user = new User(fullName, idNo, email, phone, username, password);
-
-        // Register user
-        UserRegistry.registerUser(user);
-
-        System.out.println("\n User created successfully:");
-        System.out.println(user);
-
-        return user;
     }
+
+    public static String onboardUsername() {
+        while (true) {
+            System.out.print("Please choose a username: ");
+            String username = scanner.nextLine();
+            if (!UserRegistry.usernameExists(username)) {
+                return username;
+            }
+            System.out.println("Username already exists. Please choose another.");
+        }
+    }
+
+    public static String onboardPassword() {
+        while (true) {
+            System.out.print("Please choose a password: ");
+            String password = scanner.nextLine();
+            if (isValidPassword(password)) {
+                System.out.println("Password is valid!");
+                return password;
+            } else {
+                System.out.println("The password needs to have:" +
+                        "\n- at least 8 characters;" +
+                        "\n- one uppercase (A-Z);" +
+                        "\n- one digit (0-9);" +
+                        "\n- one special character (!@#$%^&*)." +
+                        "\nPlease try again.");
+            }
+        }
+    }
+
+
 }
+
 

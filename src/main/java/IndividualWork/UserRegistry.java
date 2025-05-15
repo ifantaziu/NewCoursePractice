@@ -21,6 +21,10 @@ public class UserRegistry {
     public static void listAllUsers() {
         registeredUsers.values().forEach(System.out::println);
     }
+    public static boolean isValidPassword(String password) {
+        String regex = "^(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\\$%\\^&*])[A-Za-z0-9!@#\\$%\\^&*]{8,}$";
+        return password.matches(regex);
+    }
 
     public static boolean isValidIdNo(String idNo) {
         return idNo.matches("^[0-9]{13}$");
