@@ -5,17 +5,28 @@ public class CardAccount implements Accounts {
     private final String iban;
     private final String accountHolderName;
     private double balance;
+    private String cardDeliveryAddress = null;
 
-    public CardAccount(String iban, String accountHolderName, double initialBalance) {
+    public CardAccount(String iban, String accountHolderName, double balance, String cardDeliveryAddress) {
         this.iban = generateIban();
         this.accountHolderName = accountHolderName;
-        this.balance = initialBalance;
+        this.balance = balance;
+        this.cardDeliveryAddress = cardDeliveryAddress;
     }
 
     @Override
     public String generateIban() {
         cardCounter++;
         return String.format("MDA00CARD2259-%06d", cardCounter);
+    }
+
+    @Override
+    public String getIban() {
+        return iban;
+    }
+
+    public String getCardDeliveryAddress() {
+        return cardDeliveryAddress;
     }
 
     public void makePayment(double amount, String merchant) {
@@ -73,6 +84,11 @@ public class CardAccount implements Accounts {
         System.out.println("IBAN: " + iban);
         System.out.println("Account Holder: " + accountHolderName);
         System.out.printf("Balance: %.2f MDL%n", balance);
+        if (cardDeliveryAddress != null && !cardDeliveryAddress.isEmpty()) {
+            System.out.println("Card delivery address: " + cardDeliveryAddress);
+        } else {
+            System.out.println("No physical card issued.");
+        }
     }
 
     @Override

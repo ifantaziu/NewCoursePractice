@@ -10,7 +10,9 @@ public interface Accounts {
 
     void displayAccountDetails();
 
-    void transferBetweenOwnAccounts(double amount, Accounts destinationAccount) throws InvalidAmountException InvalidAmountException, InsufficientFundsException, AccountNotMatureException;
+    void transferBetweenOwnAccounts(double amount, Accounts destinationAccount) throws InvalidAmountException,
+            InsufficientFundsException, AccountNotMatureException;
 
     String generateIban();
+    String getIban();
 }

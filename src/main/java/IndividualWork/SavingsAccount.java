@@ -26,6 +26,10 @@ public class SavingsAccount implements Accounts {
         savingsCounter++;
         return String.format("MDA00SAV2252-%06d", savingsCounter);
     }
+    @Override
+    public String getIban() {
+        return iban;
+    }
 
     public void applyDailyInterestAndCapitalize() {
         LocalDate today = LocalDate.now();

@@ -1,6 +1,8 @@
 package IndividualWork;
 
-public class User extends Person {
+public class User {
+    private final String fullName;
+    private final String idNo;
     private final String bankClientId;
     private final String email;
     private final String phoneNumber;
@@ -8,12 +10,20 @@ public class User extends Person {
     private final String password;
 
     public User(String fullName, String idNo, String email, String phoneNumber, String username, String password) {
-        super(fullName, idNo);
+        this.fullName = fullName;
+        this.idNo = idNo;
         this.bankClientId = ClientIdGenerator.generateClientId();
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.username = username;
         this.password = password;
+    }
+    public String getFullName() {
+        return fullName;
+    }
+
+    public String getIdNo() {
+        return idNo;
     }
 
     public String getBankClientId() {

@@ -21,7 +21,7 @@ public class GeneralAccount implements Accounts {
     public double getBalance() {
         return balance;
     }
-
+    @Override
     public String getIban() {
         return iban;
     }
