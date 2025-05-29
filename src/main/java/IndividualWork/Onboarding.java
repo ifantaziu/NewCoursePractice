@@ -2,7 +2,7 @@ package IndividualWork;
 
 import java.util.Scanner;
 
-import static IndividualWork.UserRegistry.*;
+import static IndividualWork.Validator.*;
 
 public class Onboarding {
     private static final Scanner scanner = new Scanner(System.in);
@@ -36,8 +36,12 @@ public class Onboarding {
         while (true) {
             System.out.print("Enter personal ID number (IDNO) with 13 digits: ");
             String idNo = scanner.nextLine();
-            if (!idNo.matches("^[0-9]{13}$")) {
-                System.out.println("Error: The IDNO should contain  exactly 13 digits.");
+            if (!isValidIdNo(idNo)) {
+                System.out.println("Error: The IDNO should contain exactly 13 digits.");
+                continue;
+            }
+            if (isIdNoTaken(idNo)) {
+                System.out.println("This IDNO is already registered. Please try another.");
                 continue;
             }
             System.out.println("IDNO accepted: " + idNo);
@@ -47,16 +51,19 @@ public class Onboarding {
 
     public static String onboardEmail() {
         while (true) {
-            System.out.print("Enter email (e.g.examplename@mail.com): ");
+            System.out.print("Enter email (e.g. examplename@mail.com): ");
             String email = scanner.nextLine();
 
-            if (isValidEmail(email)) {
-                System.out.println("Email accepted: " + email);
-                return email;
-            } else {
-                String errorMessage = getInvalidEmailInputMessage(email);
-                System.out.println(errorMessage);
+            if (!isValidEmail(email)) {
+                System.out.println(getInvalidEmailInputMessage(email));
+                continue;
             }
+            if (isEmailTaken(email)) {
+                System.out.println("This email is already registered. Please use another.");
+                continue;
+            }
+            System.out.println("Email accepted: " + email);
+            return email;
         }
     }
 
@@ -64,20 +71,16 @@ public class Onboarding {
         while (true) {
             System.out.print("Enter local phone number starting with 0: ");
             String phone = scanner.nextLine();
-            if (!phone.matches("^[0-9]+$")) {
-                System.out.println("Error: The phone number should contain digits only.");
+            if (!isValidPhoneNumber(phone)) {
+                System.out.println("Error: Phone number must start with 0 and have 9 digits.");
                 continue;
             }
-            if (!phone.startsWith("0")) {
-                System.out.println("Error: The phone number must start with '0'.");
+            if (isPhoneTaken(phone)) {
+                System.out.println("This phone number is already registered.");
                 continue;
             }
-            if (phone.length() != 9) {
-                System.out.println("Error: The phone number must have exactly 9 digits.");
-            } else {
-                System.out.println("Phone number accepted: " + phone);
-                return phone;
-            }
+            System.out.println("Phone number accepted: " + phone);
+            return phone;
         }
     }
 
@@ -109,8 +112,7 @@ public class Onboarding {
             }
         }
     }
-
-
 }
+
 
 

@@ -1,0 +1,30 @@
+2025-05-29 19:57:22 INFO  [main] IndividualWork.AccountManager - New user onboardedClient name: hhg bj
+IDNO:6667775554445
+Bank Client ID: CL0001
+Username: ghj
+Email: jhg@hgh.com
+Phone: 098890999
+2025-05-29 19:57:50 INFO  [main] IndividualWork.AccountManager - Account created successfully:
+2025-05-29 19:57:59 INFO  [main] IndividualWork.AccountManager - Account created successfully:
+2025-05-29 19:58:02 INFO  [main] IndividualWork.AccountStorage - Account: %s | Holder: %s%nMDA00CARD2259-003001hhg bj
+2025-05-29 19:58:02 INFO  [main] IndividualWork.AccountStorage - Account: %s | Holder: %s%nMDA00GEN2251-001001hhg bj
+2025-05-29 21:05:31 INFO  [main] IndividualWork.AccountStorage - New user onboardedClient name: fxj
+IDNO:6666666666666
+Bank Client ID: CL0001
+Username: gfhjk
+Email: fgh@hh.com
+Phone: 098888777
+2025-05-29 21:05:40 INFO  [main] IndividualWork.AccountStorage - Account created successfully:
+2025-05-29 21:06:02 INFO  [main] IndividualWork.AccountStorage - Account created successfully:
+2025-05-29 21:06:06 INFO  [main] IndividualWork.AccountStorage - Account: %s | Holder: %s%nGEN2251-001001fxj
+2025-05-29 21:06:06 INFO  [main] IndividualWork.AccountStorage - Account: %s | Holder: %s%nCARD2259-003001fxj
+2025-05-29 21:21:44 INFO  [main] IndividualWork.AccountStorage - New user onboardedClient name: hfj
+IDNO:6666666666666
+Bank Client ID: CL0001
+Username: hg
+Email: jhv@hghj.com
+Phone: 098888888
+2025-05-29 21:21:54 INFO  [main] IndividualWork.AccountStorage - Account created successfully:
+2025-05-29 21:22:05 INFO  [main] IndividualWork.AccountStorage - Account created successfully:
+2025-05-29 21:22:08 INFO  [main] IndividualWork.AccountStorage - Account: %s | Holder: %s%nGEN2251-001001hfj
+2025-05-29 21:22:08 INFO  [main] IndividualWork.AccountStorage - Account: %s | Holder: %s%nCARD2259-003001hfj

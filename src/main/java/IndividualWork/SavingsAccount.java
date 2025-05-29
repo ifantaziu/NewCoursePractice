@@ -3,20 +3,20 @@ package IndividualWork;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-public class SavingsAccount implements Accounts {
+public class SavingsAccount extends AbstractAccount implements Accounts {
     private static int savingsCounter = 2000;
+    private static final int maturityTermMonths = 6;
     private final String iban;
     private final String accountHolderName;
-    private double balance;
     private final LocalDate accountOpeningDate;
     private LocalDate lastInterestDate;
 
     private static final double ANNUAL_INTEREST_RATE = 0.065;
 
-    public SavingsAccount(String iban, String accountHolderName, double initialDeposit) {
+    public SavingsAccount(String iban, String accountHolderName, double balance) {
+        super(balance);
         this.iban = generateIban();
         this.accountHolderName = accountHolderName;
-        this.balance = initialDeposit;
         this.accountOpeningDate = LocalDate.now();
         this.lastInterestDate = this.accountOpeningDate;
     }
@@ -24,8 +24,9 @@ public class SavingsAccount implements Accounts {
     @Override
     public String generateIban() {
         savingsCounter++;
-        return String.format("MDA00SAV2252-%06d", savingsCounter);
+        return String.format("SAV2252-%06d", savingsCounter);
     }
+
     @Override
     public String getIban() {
         return iban;
@@ -43,26 +44,13 @@ public class SavingsAccount implements Accounts {
         double dailyRate = ANNUAL_INTEREST_RATE / 365;
 
         for (int i = 0; i < days; i++) {
-            double interest = balance * dailyRate;
-            balance += interest;
+            double interest = getBalance() * dailyRate;
+            double balance = getBalance() + interest;
         }
 
         lastInterestDate = today;
 
-        System.out.printf("Applied and capitalized interest for %d day(s). New balance: %.2f MDL%n", days, balance);
-    }
-
-    @Override
-    public void deposit(double amount) {
-        try {
-            if (amount <= 0) {
-                throw new InvalidAmountException("Deposit must be greater than zero.");
-            }
-            balance += amount;
-            System.out.printf("Deposited successful%.2f MDL. New balance: %.2f MDL%n", amount, balance);
-        } catch (InvalidAmountException e) {
-            System.out.println("Error: " + e.getMessage());
-        }
+        System.out.printf("Applied and capitalized interest for %d day(s). New balance: %.2f MDL%n", days, getBalance());
     }
 
     @Override
@@ -74,39 +62,27 @@ public class SavingsAccount implements Accounts {
             if (ChronoUnit.MONTHS.between(accountOpeningDate, LocalDate.now()) < 6) {
                 throw new AccountNotMatureException("Cannot withdraw before account matures (6 months).");
             }
-            if (amount > balance) {
+            if (amount > getBalance()) {
                 throw new InsufficientFundsException("Not enough funds in savings account.");
             }
-            balance -= amount;
-            System.out.printf("Withdrew successful %.2f MDL. Remaining balance: %.2f MDL%n", amount, balance);
+            double balance = getBalance() - amount;
+            System.out.printf("Withdrew successful %.2f MDL. Remaining balance: %.2f MDL%n", amount, getBalance());
         } catch (InvalidAmountException | InsufficientFundsException | AccountNotMatureException e) {
             System.out.println("Error: " + e.getMessage());
         }
     }
 
     @Override
-    public void checkAccountBalance() {
-        System.out.printf("Current balance: %.2f MDL%n", balance);
-    }
-
-    @Override
     public void transferBetweenOwnAccounts(double amount, Accounts destinationAccount) throws InvalidAmountException {
-        LocalDate today = LocalDate.now();
-        long months = ChronoUnit.MONTHS.between(accountOpeningDate, today);
-
-        if (months < 6) {
-            System.out.println("Transfer not allowed: Savings account is not yet mature.");
+        if (amount <= 0 || amount > getBalance()) {
+            System.out.println("Transfer failed: invalid amount or insufficient funds.");
             return;
         }
 
-        if (amount <= 0 || amount > balance) {
-            System.out.println("Transfer failed: insufficient funds.");
-            return;
-        }
-
-        this.balance -= amount;
+        withdrawal(amount);
         destinationAccount.deposit(amount);
-        System.out.printf("Transferred %.2f MDL from Savings Account to target account.%n", amount);
+
+        System.out.printf("Transferred %.2f MDL from Card Account to target account.%n", amount);
     }
 
     @Override
@@ -115,7 +91,7 @@ public class SavingsAccount implements Accounts {
         System.out.println("IBAN: " + iban);
         System.out.println("Account Holder: " + accountHolderName);
         System.out.println("Opened on: " + accountOpeningDate);
-        System.out.printf("Balance: %.2f MDL%n", balance);
+        System.out.printf("Balance: %.2f MDL%n", getBalance());
         System.out.println("Last interest date: " + lastInterestDate);
     }
 }

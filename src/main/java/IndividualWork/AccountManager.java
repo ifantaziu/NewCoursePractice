@@ -1,8 +1,12 @@
 package IndividualWork;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.*;
 
 public class AccountManager {
+    private static final Logger logger = LoggerFactory.getLogger(AccountStorage.class);
     private static final Scanner scanner = new Scanner(System.in);
     private static User user;
 
@@ -21,7 +25,9 @@ public class AccountManager {
                     case 7 -> applyInterest();
                     case 8 -> initiateCurrencyExchange();
                     case 9 -> withdrawFromCashOutAccount();
-                    case 10 -> exit();
+                    case 10 -> showAccountList();
+                    case 11 -> removeAnAccount();
+                    case 12 -> exit();
                     default -> System.out.println("Invalid choice, please try again.");
                 }
             } catch (Exception e) {
@@ -41,7 +47,9 @@ public class AccountManager {
         System.out.println("7. Apply Interest (Savings Account only)");
         System.out.println("8. Currency Exchange");
         System.out.println("9. Withdraw from Cash-Out Account");
-        System.out.println("10. Exit");
+        System.out.println("10. Show my Accounts");
+        System.out.println("11. Remove an Account");
+        System.out.println("12. Exit");
         System.out.print("Please enter your choice: ");
     }
 
@@ -56,7 +64,8 @@ public class AccountManager {
     private static void onboardNewUser() {
         user = Onboarding.onboardNewUser();
         AccountStorage.initializeCurrencyAccount(user);
-        System.out.println("New user onboarded: " + user);
+        //    System.out.println("New user onboarded: " + user);
+        logger.info("New user onboarded" + user);
     }
 
     private static void openNewAccount() {
@@ -96,8 +105,9 @@ public class AccountManager {
         };
 
         if (account != null) {
-            AccountStorage.addAccount(user, account);  // <-- Aici
-            System.out.println("Account created successfully:");
+            AccountStorage.addAccount(user, account);
+            // System.out.println("Account created successfully:");
+            logger.info("Account created successfully:");
             account.displayAccountDetails();
         }
     }
@@ -198,11 +208,12 @@ public class AccountManager {
         for (Currency currency : Currency.values()) {
             System.out.printf("%s: %.2f MDL%n", currency, currency.getExchangeRate());
         }
+        while (true) {
+            System.out.print("Select currency to convert FROM (e.g. USD): ");
+            Currency fromCurrency = Currency.valueOf(scanner.nextLine().toUpperCase());
 
-        System.out.print("Select currency to convert FROM (e.g. USD): ");
-        Currency fromCurrency = Currency.valueOf(scanner.nextLine().toUpperCase());
-
-        convertFromCurrencyToMDL(user, fromCurrency, scanner);
+            convertFromCurrencyToMDL(user, fromCurrency, scanner);
+        }
     }
 
     public static void convertFromCurrencyToMDL(User user, Currency fromCurrency, Scanner scanner) {
@@ -224,7 +235,62 @@ public class AccountManager {
     }
 
     private static void transferBetweenAccounts() {
-        System.out.println("Transfer between accounts is not implemented yet.");
+        if (user == null) {
+            System.out.println("Please onboard a user first (option 1).");
+            return;
+        }
+
+        Accounts sourceAccount = null;
+        while (sourceAccount == null) {
+            System.out.print("Enter source account IBAN: ");
+            String sourceIban = scanner.nextLine();
+            sourceAccount = findAccountByIban(sourceIban);
+            if (sourceAccount == null) {
+                System.out.println("Source account not found. Please try again.");
+            }
+        }
+
+        Accounts destinationAccount = null;
+        while (destinationAccount == null) {
+            System.out.print("Enter destination account IBAN: ");
+            String destIban = scanner.nextLine();
+            destinationAccount = findAccountByIban(destIban);
+            if (destinationAccount == null) {
+                System.out.println("Destination account not found. Please try again.");
+            }
+        }
+
+        double amount = 0;
+        boolean validAmount = false;
+        while (!validAmount) {
+            System.out.print("Enter amount to transfer: ");
+            try {
+                amount = Double.parseDouble(scanner.nextLine());
+                if (amount <= 0) {
+                    System.out.println("Amount must be greater than zero. Please try again.");
+                } else {
+                    validAmount = true;
+                }
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid amount format. Please enter a number.");
+            }
+        }
+
+        try {
+            sourceAccount.transferBetweenOwnAccounts(amount, destinationAccount);
+        } catch (InvalidAmountException | InsufficientFundsException | AccountNotMatureException e) {
+            System.out.println("Transfer failed: " + e.getMessage());
+        }
+    }
+
+    private static void showAccountList() {
+        AccountStorage.showAllAccounts(user);
+    }
+
+    private static void removeAnAccount() {
+        System.out.print("Enter the account IBAN: ");
+        String iban = scanner.nextLine();
+        AccountStorage.removeAccount(user, iban);
     }
 
     private static void exit() {

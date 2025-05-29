@@ -1,11 +1,16 @@
 package IndividualWork;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 public class AccountStorage {
+    private static final Logger logger = LoggerFactory.getLogger(AccountStorage.class);
     private static final Map<User, List<Accounts>> userAccounts = new HashMap<>();
     private static final Map<User, Map<Currency, CurrencyCashOutAccount>> userCurrencyCashOutAccounts = new HashMap<>();
 
@@ -41,7 +46,8 @@ public class AccountStorage {
 
         System.out.println("List of all accounts for user: " + user.getFullName());
         for (Accounts acc : accounts) {
-            System.out.printf("Account: %s | Holder: %s%n", acc.getIban(), user.getFullName());
+            //System.out.printf("Account: %s | Holder: %s%n", acc.getIban(), user.getFullName());
+            logger.info("Account: %s | Holder: %s%n" + acc.getIban() + user.getFullName());
             acc.checkAccountBalance();
         }
     }
