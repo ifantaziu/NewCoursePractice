@@ -3,6 +3,7 @@ package IndividualWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
 import java.util.*;
 
 public class AccountManager {
@@ -11,6 +12,7 @@ public class AccountManager {
     private static User user;
 
     public static void main(String[] args) {
+
         while (true) {
             showMenu();
             int choice = getChoice();
@@ -62,10 +64,17 @@ public class AccountManager {
     }
 
     private static void onboardNewUser() {
-        user = Onboarding.onboardNewUser();
+        DBConnect dbConnect = new DBConnect();
+        Connection connection = dbConnect.getConnection();
+        Onboarding onboarding = new Onboarding(connection);
+        User user = onboarding.onboardNewUser();
+
+        if (user != null) {
+            logger.info("New user onboarded" + user);
+        }
         AccountStorage.initializeCurrencyAccount(user);
         //    System.out.println("New user onboarded: " + user);
-        logger.info("New user onboarded" + user);
+
     }
 
     private static void openNewAccount() {

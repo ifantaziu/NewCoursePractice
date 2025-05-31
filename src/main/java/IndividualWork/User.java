@@ -3,20 +3,21 @@ package IndividualWork;
 public class User {
     private final String fullName;
     private final String idNo;
-    private final String bankClientId;
+    private final String clientId;
     private final String email;
     private final String phoneNumber;
     private final String username;
     private final String password;
 
-    public User(String fullName, String idNo, String email, String phoneNumber, String username, String password) {
+    public User(String fullName, String idNo, String clientId, String email, String phoneNumber, String username, String password) {
         this.fullName = fullName;
         this.idNo = idNo;
-        this.bankClientId = ClientIdGenerator.generateClientId();
+        this.clientId = IdGenerator.generateClientId();
         this.email = email;
         this.phoneNumber = phoneNumber;
         this.username = username;
         this.password = password;
+
     }
     public String getFullName() {
         return fullName;
@@ -26,8 +27,8 @@ public class User {
         return idNo;
     }
 
-    public String getBankClientId() {
-        return bankClientId;
+    public String getClientId() {
+        return clientId;
     }
 
     public String getEmail() {
@@ -50,7 +51,7 @@ public class User {
     public String toString() {
         return "Client name: " + getFullName() +
                 "\nIDNO:" + getIdNo() +
-                "\nBank Client ID: " + getBankClientId() +
+                "\nBank Client ID: " + getClientId() +
                 "\nUsername: " + getUsername() +
                 "\nEmail: " + getEmail() +
                 "\nPhone: " + getPhoneNumber();

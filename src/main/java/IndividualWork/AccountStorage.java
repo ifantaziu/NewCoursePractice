@@ -3,6 +3,9 @@ package IndividualWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,12 +17,26 @@ public class AccountStorage {
     private static final Map<User, List<Accounts>> userAccounts = new HashMap<>();
     private static final Map<User, Map<Currency, CurrencyCashOutAccount>> userCurrencyCashOutAccounts = new HashMap<>();
 
-    public static void addAccount(User user, Accounts account) {
-        if (user == null || account == null) {
-            throw new IllegalArgumentException("User and account must not be null.");
+    public static void addAccount(String username, String fullName, double balance, String type, boolean issueCard, String deliveryAddress) {
+        String iban = IdGenerator.generateIban(type);
+
+        DBConnect dbConnect = new DBConnect();
+        try (Connection conn = DBConnect.getConnection()) {
+            String sql = "INSERT INTO accounts (username, iban, balance, type, issue_card, delivery_address) VALUES (?, ?, ?, ?, ?, ?)";
+            PreparedStatement ps = conn.prepareStatement(sql);
+            ps.setString(1, username);
+            ps.setString(2, iban);
+            ps.setDouble(3, balance);
+            ps.setString(4, type);
+            ps.setBoolean(5, issueCard);
+            ps.setString(6, deliveryAddress);
+            ps.executeUpdate();
+            System.out.println("Account created successfully with IBAN: " + iban);
+        } catch (SQLException e) {
+            System.out.println("Account creation failed: " + e.getMessage());
         }
-        userAccounts.computeIfAbsent(user, k -> new ArrayList<>()).add(account);
     }
+
 
     public static List<Accounts> getUserAccounts(User user) {
         return new ArrayList<>(userAccounts.getOrDefault(user, new ArrayList<>()));
