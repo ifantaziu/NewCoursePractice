@@ -1,42 +1,48 @@
 package IndividualWork;
 
 public class User {
-    private final String fullName;
-    private final String idNo;
-    private final String clientId;
+
+    private static String fullname;
+    private final String idno;
+    private final String clientid;
     private final String email;
-    private final String phoneNumber;
+    private final String phone;
     private final String username;
     private final String password;
 
-    public User(String fullName, String idNo, String clientId, String email, String phoneNumber, String username, String password) {
-        this.fullName = fullName;
-        this.idNo = idNo;
-        this.clientId = IdGenerator.generateClientId();
+    public User(String fullName, String idno, String clientid, String email, String phone, String username, String password) {
+        this.fullname = fullName;
+        this.idno = idno;
+        this.clientid = IdGenerator.generateClientid();
         this.email = email;
-        this.phoneNumber = phoneNumber;
+        this.phone = phone;
+
         this.username = username;
         this.password = password;
 
     }
-    public String getFullName() {
-        return fullName;
+
+    public static String getFullname() {
+        return fullname;
     }
 
-    public String getIdNo() {
-        return idNo;
+    public String getIdno() {
+        return idno;
     }
 
-    public String getClientId() {
-        return clientId;
+    public String getClientid() {
+        return clientid;
+
     }
 
     public String getEmail() {
         return email;
     }
 
-    public String getPhoneNumber() {
-        return phoneNumber;
+
+    public String getPhone() {
+        return phone;
+
     }
 
     public String getUsername() {
@@ -49,12 +55,14 @@ public class User {
 
     @Override
     public String toString() {
-        return "Client name: " + getFullName() +
-                "\nIDNO:" + getIdNo() +
-                "\nBank Client ID: " + getClientId() +
+
+        return "Client name: " + getFullname() +
+                "\nIDNO:" + getIdno() +
+                "\nBank Client ID: " + getClientid() +
                 "\nUsername: " + getUsername() +
                 "\nEmail: " + getEmail() +
-                "\nPhone: " + getPhoneNumber();
+                "\nPhone: " + getPhone();
+
     }
 
 }

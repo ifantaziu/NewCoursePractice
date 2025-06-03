@@ -2,45 +2,51 @@ package IndividualWork;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.sql.Connection;
-import java.util.*;
+import java.sql.SQLException;
+import java.util.Scanner;
 
 public class AccountManager {
-    private static final Logger logger = LoggerFactory.getLogger(AccountStorage.class);
+    private static final Logger logger = LoggerFactory.getLogger(AccountManager.class);
     private static final Scanner scanner = new Scanner(System.in);
-    private static User user;
+    private static User currentUser = null;
+    private static Onboarding onboarding;
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws SQLException {
+        try (Connection connection = new DBConnect().getConnection()) {
+            onboarding = new Onboarding(connection);
 
-        while (true) {
-            showMenu();
-            int choice = getChoice();
-            try {
-                switch (choice) {
-                    case 1 -> onboardNewUser();
-                    case 2 -> openNewAccount();
-                    case 3 -> transferBetweenAccounts();
-                    case 4 -> deposit();
-                    case 5 -> withdrawal();
-                    case 6 -> makePayment();
-                    case 7 -> applyInterest();
-                    case 8 -> initiateCurrencyExchange();
-                    case 9 -> withdrawFromCashOutAccount();
-                    case 10 -> showAccountList();
-                    case 11 -> removeAnAccount();
-                    case 12 -> exit();
-                    default -> System.out.println("Invalid choice, please try again.");
+            while (true) {
+                showMenu();
+                int choice = getChoice();
+                try {
+                    switch (choice) {
+                        case 0 -> onboardNewUser();
+                        case 1 -> loginUser();
+                        case 2 -> openNewAccount();
+                        case 3 -> transferBetweenAccounts();
+                        case 4 -> deposit();
+                        case 5 -> withdrawal();
+                        case 6 -> makePayment();
+                        case 7 -> applyInterest();
+                        case 8 -> initiateCurrencyExchange();
+                        case 9 -> withdrawFromCashOutAccount();
+                        case 10 -> showAccountList();
+                        case 11 -> removeAnAccount();
+                        case 12 -> exit();
+                        default -> System.out.println("Invalid choice, please try again.");
+                    }
+                } catch (Exception e) {
+                    System.err.println("Error while processing request: " + e.getMessage());
                 }
-            } catch (Exception e) {
-                System.out.println("Error: " + e.getMessage());
             }
         }
     }
 
     private static void showMenu() {
         System.out.println("\n--- Account Manager Menu ---");
-        System.out.println("1. Onboard New User");
+        System.out.println("0. Onboard New User");
+        System.out.println("1. Login");
         System.out.println("2. Open a New Account");
         System.out.println("3. Transfer Between Own Accounts");
         System.out.println("4. Deposit to Account");
@@ -63,22 +69,24 @@ public class AccountManager {
         }
     }
 
+
     private static void onboardNewUser() {
-        DBConnect dbConnect = new DBConnect();
-        Connection connection = dbConnect.getConnection();
-        Onboarding onboarding = new Onboarding(connection);
-        User user = onboarding.onboardNewUser();
-
-        if (user != null) {
-            logger.info("New user onboarded" + user);
+        currentUser = onboarding.onboardNewUser();
+        if (currentUser != null) {
+            logger.info("New user onboarded: " + currentUser);
+            AccountStorage.initializeCurrencyAccount(currentUser);
         }
-        AccountStorage.initializeCurrencyAccount(user);
-        //    System.out.println("New user onboarded: " + user);
+    }
 
+    private static void loginUser() {
+        currentUser = onboarding.loginUser();
+        if (currentUser != null) {
+            System.out.println("You are logged in as: " + currentUser.getFullname());
+        }
     }
 
     private static void openNewAccount() {
-        if (user == null) {
+        if (currentUser == null) {
             System.out.println("Please onboard a user first (option 1).");
             return;
         }
@@ -94,8 +102,8 @@ public class AccountManager {
         double initialDeposit = Double.parseDouble(scanner.nextLine());
 
         Accounts account = switch (accountType) {
-            case 1 -> new GeneralAccount(null, user.getFullName(), initialDeposit);
-            case 2 -> new SavingsAccount(null, user.getFullName(), initialDeposit);
+            case 1 -> new GeneralAccount(null, currentUser.getFullname(), initialDeposit);
+            case 2 -> new SavingsAccount(null, currentUser.getFullname(), initialDeposit);
             case 3 -> {
                 System.out.println("Do you want to issue a plastic card? (yes/no)");
                 String answer = scanner.nextLine().trim().toLowerCase();
@@ -105,7 +113,8 @@ public class AccountManager {
                     deliveryAddress = scanner.nextLine();
                     System.out.println("Thank you! The courier will call you within three days for card delivery.");
                 }
-                yield new CardAccount(null, user.getFullName(), initialDeposit, deliveryAddress);
+
+                yield new CardAccount(null, currentUser.getFullname(), initialDeposit, deliveryAddress);
             }
             default -> {
                 System.out.println("Invalid account type.");
@@ -114,7 +123,7 @@ public class AccountManager {
         };
 
         if (account != null) {
-            AccountStorage.addAccount(user, account);
+            AccountStorage.addAccount(currentUser, account);
             // System.out.println("Account created successfully:");
             logger.info("Account created successfully:");
             account.displayAccountDetails();
@@ -160,7 +169,10 @@ public class AccountManager {
         account.deposit(amount);
     }
 
-    private static void withdrawal() throws InvalidAmountException, InsufficientFundsException, AccountNotMatureException {
+
+    private static void withdrawal() throws
+            InvalidAmountException, InsufficientFundsException, AccountNotMatureException {
+
         System.out.print("Enter the account IBAN: ");
         String iban = scanner.nextLine();
         Accounts account = findAccountByIban(iban);
@@ -175,7 +187,9 @@ public class AccountManager {
 
     private static Accounts findAccountByIban(String iban) {
         try {
-            return AccountStorage.findAccountByIban(user, iban);
+
+            return AccountStorage.findAccountByIban(currentUser, iban);
+
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
             return null;
@@ -192,7 +206,9 @@ public class AccountManager {
             return;
         }
 
-        CurrencyCashOutAccount cashOutAccount = AccountStorage.getCurrencyCashOutAccount(user, currency);
+
+        CurrencyCashOutAccount cashOutAccount = AccountStorage.getCurrencyCashOutAccount(currentUser, currency);
+
         if (cashOutAccount == null) {
             System.out.println("Cash-out account not found.");
             return;
@@ -221,7 +237,9 @@ public class AccountManager {
             System.out.print("Select currency to convert FROM (e.g. USD): ");
             Currency fromCurrency = Currency.valueOf(scanner.nextLine().toUpperCase());
 
-            convertFromCurrencyToMDL(user, fromCurrency, scanner);
+
+            convertFromCurrencyToMDL(currentUser, fromCurrency, scanner);
+
         }
     }
 
@@ -244,7 +262,8 @@ public class AccountManager {
     }
 
     private static void transferBetweenAccounts() {
-        if (user == null) {
+
+        if (currentUser == null) {
             System.out.println("Please onboard a user first (option 1).");
             return;
         }
@@ -293,20 +312,23 @@ public class AccountManager {
     }
 
     private static void showAccountList() {
-        AccountStorage.showAllAccounts(user);
+
+        AccountStorage.showAllAccounts(currentUser);
+
     }
 
     private static void removeAnAccount() {
         System.out.print("Enter the account IBAN: ");
         String iban = scanner.nextLine();
-        AccountStorage.removeAccount(user, iban);
+
+        AccountStorage.removeAccount(currentUser, iban);
+
     }
 
     private static void exit() {
         System.out.println("Exiting the Account Manager. Goodbye!");
         System.exit(0);
     }
-
 
 }
 

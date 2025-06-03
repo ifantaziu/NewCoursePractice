@@ -12,30 +12,49 @@ import java.util.List;
 import java.util.Map;
 
 
+import static IndividualWork.User.getFullname;
+
+
 public class AccountStorage {
     private static final Logger logger = LoggerFactory.getLogger(AccountStorage.class);
     private static final Map<User, List<Accounts>> userAccounts = new HashMap<>();
     private static final Map<User, Map<Currency, CurrencyCashOutAccount>> userCurrencyCashOutAccounts = new HashMap<>();
 
-    public static void addAccount(String username, String fullName, double balance, String type, boolean issueCard, String deliveryAddress) {
-        String iban = IdGenerator.generateIban(type);
 
-        DBConnect dbConnect = new DBConnect();
-        try (Connection conn = DBConnect.getConnection()) {
-            String sql = "INSERT INTO accounts (username, iban, balance, type, issue_card, delivery_address) VALUES (?, ?, ?, ?, ?, ?)";
-            PreparedStatement ps = conn.prepareStatement(sql);
-            ps.setString(1, username);
-            ps.setString(2, iban);
-            ps.setDouble(3, balance);
-            ps.setString(4, type);
-            ps.setBoolean(5, issueCard);
-            ps.setString(6, deliveryAddress);
-            ps.executeUpdate();
-            System.out.println("Account created successfully with IBAN: " + iban);
-        } catch (SQLException e) {
-            System.out.println("Account creation failed: " + e.getMessage());
-        }
-    }
+   // public static void addAccount(String username, String fullName, double balance, String type, boolean issueCard, String deliveryAddress) {
+   public static void addAccount(User user, Accounts account) {
+       String iban;
+
+       if (account instanceof GeneralAccount) {
+           iban = IdGenerator.generateIban("general");
+       } else if (account instanceof SavingsAccount) {
+           iban = IdGenerator.generateIban("savings");
+       } else if (account instanceof CardAccount) {
+           iban = IdGenerator.generateIban("card");
+       } else {
+           System.out.println("Unknown account type.");
+           return;
+       }
+
+       try (Connection conn = new DBConnect().getConnection()) {
+           String sql = "INSERT INTO accounts (username, fullname, iban, balance, type, issue_card, delivery_address) VALUES (?, ?, ?, ?, ?, ?, ?)";
+           PreparedStatement ps = conn.prepareStatement(sql);
+
+           ps.setString(1, user.getUsername());
+           ps.setString(2, user.getFullname());
+           ps.setString(3, iban);
+           ps.setDouble(4, account.getBalance());
+           ps.setString(5, account.getAccountType());
+           ps.setBoolean(6, account instanceof CardAccount);
+           ps.setString(7, (account instanceof CardAccount) ? ((CardAccount) account).getCardDeliveryAddress() : null);
+
+           ps.executeUpdate();
+           System.out.println("Account created successfully with IBAN: " + iban);
+       } catch (SQLException e) {
+           System.out.println("Account creation failed: " + e.getMessage());
+       }
+   }
+
 
 
     public static List<Accounts> getUserAccounts(User user) {
@@ -61,10 +80,12 @@ public class AccountStorage {
             return;
         }
 
-        System.out.println("List of all accounts for user: " + user.getFullName());
+
+        System.out.println("List of all accounts for user: " + getFullname());
         for (Accounts acc : accounts) {
             //System.out.printf("Account: %s | Holder: %s%n", acc.getIban(), user.getFullName());
-            logger.info("Account: %s | Holder: %s%n" + acc.getIban() + user.getFullName());
+            logger.info("Account: %s | Holder: %s%n" + acc.getIban() + getFullname());
+
             acc.checkAccountBalance();
         }
     }

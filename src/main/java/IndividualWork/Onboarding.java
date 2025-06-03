@@ -19,17 +19,21 @@ public class Onboarding {
     public User onboardNewUser() {
         try {
             System.out.println("Welcome to your lifetime bank!");
-            String fullName = onboardFullName();
-            String idNo = onboardIdNo();
+
+            String fullname = onboardfullname();
+            String idno = onboardidno();
+
             String email = onboardEmail();
             String phone = onboardPhone();
             String username = onboardUsername();
             String password = onboardPassword();
-            String clientId = IdGenerator.generateClientId();
-            // Create user
-            //User user = new User(fullName, idNo, email, phone, username, password, clientId);
 
-            String sql = "INSERT INTO users (idno, username, password, full_name, email, phone, bankClientId) " +
+            String clientid = IdGenerator.generateClientid();
+            // Create user
+            //User user = new User(fullName, idno, email, phone, username, password, clientId);
+
+            String sql = "INSERT INTO users (username, fullname, idno, email, phone, password, clientid) " +
+
                     "VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             // Register user
@@ -40,18 +44,20 @@ public class Onboarding {
 
             // return user;
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setString(1, idNo);
-                stmt.setString(2, username);
-                stmt.setString(3, password);
-                stmt.setString(4, fullName);
-                stmt.setString(5, email);
-                stmt.setString(6, phone);
-                stmt.setString(7, clientId);
+
+                stmt.setString(1, username);
+                stmt.setString(2, fullname);
+                stmt.setString(3, idno);
+                stmt.setString(4, email);
+                stmt.setString(5, phone);
+                stmt.setString(6, password);
+                stmt.setString(7, clientid);
                 stmt.executeUpdate();
             }
 
-            System.out.println("User registered successfully. Your Client ID is: " + clientId);
-            return new User(idNo, username, password, fullName, email, phone, clientId);
+            System.out.println("User registered successfully. Your Client ID is: " + clientid);
+            return new User(username, fullname, idno, email, phone, password, clientid);
+
 
         } catch (SQLException e) {
             System.err.println("Error during registration: " + e.getMessage());
@@ -59,25 +65,29 @@ public class Onboarding {
         }
     }
 
-    private String onboardFullName() {
+
+    private String onboardfullname() {
+
         System.out.print("For registration, please enter full name: ");
         return scanner.nextLine();
     }
 
-    private String onboardIdNo() {
+
+    private String onboardidno() {
         while (true) {
             System.out.print("Enter personal ID number (IDNO) with 13 digits: ");
-            String idNo = scanner.nextLine();
-            if (!isValidIdNo(idNo)) {
+            String idno = scanner.nextLine();
+            if (!isValidIdno(idno)) {
                 System.out.println("Error: The IDNO should contain exactly 13 digits.");
                 continue;
             }
-            if (isIdNoTaken(idNo)) {
+            if (isIdnoTaken(idno)) {
                 System.out.println("This IDNO is already registered. Please try another.");
                 continue;
             }
-            System.out.println("IDNO accepted: " + idNo);
-            return idNo;
+            System.out.println("IDNO accepted: " + idno);
+            return idno;
+
         }
     }
 
@@ -103,7 +113,9 @@ public class Onboarding {
         while (true) {
             System.out.print("Enter local phone number starting with 0: ");
             String phone = scanner.nextLine();
-            if (!isValidPhoneNumber(phone)) {
+
+            if (!isValidPhone(phone)) {
+
                 System.out.println("Error: Phone number must start with 0 and have 9 digits.");
                 continue;
             }
@@ -157,18 +169,22 @@ public class Onboarding {
 
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, username);
-                stmt.setString(2, password);
+
+                stmt.setString(6, password);
+
 
                 ResultSet rs = stmt.executeQuery();
                 if (rs.next()) {
                     String idno = rs.getString("idno");
-                    String fullName = rs.getString("full_name");
+
+                    String fullname = rs.getString("fullname");
                     String email = rs.getString("email");
                     String phone = rs.getString("phone");
-                    String clientId = rs.getString("clientId");
+                    String clientid = rs.getString("clientid");
 
-                    System.out.println("Login successful. Welcome, " + fullName + "!");
-                    return new User(idno, username, password, fullName, email, phone, clientId);
+                    System.out.println("Login successful. Welcome, " + fullname + "!");
+                    return new User(username, fullname, idno, email, phone, password, clientid);
+
                 } else {
                     System.out.println("Invalid username or password.");
                     return null;
