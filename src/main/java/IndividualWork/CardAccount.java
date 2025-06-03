@@ -1,48 +1,28 @@
 package IndividualWork;
 
 public class CardAccount extends AbstractAccount implements Accounts {
-<<<<<<< HEAD
-    private static int cardCounter = 3000;
-=======
->>>>>>> a491eab (Save local changes before rebase)
     private final String iban;
     private final String accountHolderName;
     private String cardDeliveryAddress = null;
 
     public CardAccount(String iban, String accountHolderName, double balance, String cardDeliveryAddress) {
-<<<<<<< HEAD
-        super(balance);
-        this.iban = generateIban();
-=======
         super(balance, iban);
         this.iban = IdGenerator.generateIban("card");
->>>>>>> a491eab (Save local changes before rebase)
         this.accountHolderName = accountHolderName;
         this.cardDeliveryAddress = cardDeliveryAddress;
     }
 
-<<<<<<< HEAD
-    @Override
-    public String generateIban() {
-        cardCounter++;
-        return String.format("CARD2259-%06d", cardCounter);
-    }
-=======
->>>>>>> a491eab (Save local changes before rebase)
 
     @Override
     public String getIban() {
         return iban;
     }
 
-<<<<<<< HEAD
-=======
     @Override
     public String getAccountType() {
         return "card";
     }
 
->>>>>>> a491eab (Save local changes before rebase)
     public String getCardDeliveryAddress() {
         return cardDeliveryAddress;
     }
@@ -55,11 +35,7 @@ public class CardAccount extends AbstractAccount implements Accounts {
             if (amount > getBalance()) {
                 throw new InsufficientFundsException("Insufficient funds for payment.");
             }
-<<<<<<< HEAD
-            double balance = getBalance()- amount;
-=======
             double balance = getBalance() - amount;
->>>>>>> a491eab (Save local changes before rebase)
             System.out.printf("Paid successful %.2f MDL to %s. Remaining balance: %.2f MDL%n", amount, merchant, balance);
         } catch (InvalidAmountException | InsufficientFundsException e) {
             System.out.println("Error: " + e.getMessage());
@@ -87,18 +63,10 @@ public class CardAccount extends AbstractAccount implements Accounts {
             return;
         }
 
-<<<<<<< HEAD
-        double balance = getBalance()- amount;
-=======
         double balance = getBalance() - amount;
->>>>>>> a491eab (Save local changes before rebase)
         destinationAccount.deposit(amount);
 
         System.out.printf("Transferred %.2f MDL from Card Account to target account.%n", amount);
     }
-<<<<<<< HEAD
-}
-=======
 
-   }
->>>>>>> a491eab (Save local changes before rebase)
+}

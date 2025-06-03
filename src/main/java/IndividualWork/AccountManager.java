@@ -2,6 +2,7 @@ package IndividualWork;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Scanner;
@@ -113,7 +114,6 @@ public class AccountManager {
                     deliveryAddress = scanner.nextLine();
                     System.out.println("Thank you! The courier will call you within three days for card delivery.");
                 }
-
                 yield new CardAccount(null, currentUser.getFullname(), initialDeposit, deliveryAddress);
             }
             default -> {
@@ -169,10 +169,8 @@ public class AccountManager {
         account.deposit(amount);
     }
 
-
     private static void withdrawal() throws
             InvalidAmountException, InsufficientFundsException, AccountNotMatureException {
-
         System.out.print("Enter the account IBAN: ");
         String iban = scanner.nextLine();
         Accounts account = findAccountByIban(iban);
@@ -187,9 +185,7 @@ public class AccountManager {
 
     private static Accounts findAccountByIban(String iban) {
         try {
-
             return AccountStorage.findAccountByIban(currentUser, iban);
-
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
             return null;
@@ -206,9 +202,7 @@ public class AccountManager {
             return;
         }
 
-
         CurrencyCashOutAccount cashOutAccount = AccountStorage.getCurrencyCashOutAccount(currentUser, currency);
-
         if (cashOutAccount == null) {
             System.out.println("Cash-out account not found.");
             return;
@@ -237,9 +231,7 @@ public class AccountManager {
             System.out.print("Select currency to convert FROM (e.g. USD): ");
             Currency fromCurrency = Currency.valueOf(scanner.nextLine().toUpperCase());
 
-
             convertFromCurrencyToMDL(currentUser, fromCurrency, scanner);
-
         }
     }
 
@@ -262,7 +254,6 @@ public class AccountManager {
     }
 
     private static void transferBetweenAccounts() {
-
         if (currentUser == null) {
             System.out.println("Please onboard a user first (option 1).");
             return;
@@ -312,25 +303,17 @@ public class AccountManager {
     }
 
     private static void showAccountList() {
-
         AccountStorage.showAllAccounts(currentUser);
-
     }
 
     private static void removeAnAccount() {
         System.out.print("Enter the account IBAN: ");
         String iban = scanner.nextLine();
-
         AccountStorage.removeAccount(currentUser, iban);
-
     }
 
     private static void exit() {
         System.out.println("Exiting the Account Manager. Goodbye!");
         System.exit(0);
     }
-
 }
-
-
-
