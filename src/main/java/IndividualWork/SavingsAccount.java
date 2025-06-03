@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 package IndividualWork;
+=======
+`package IndividualWork;
+>>>>>>> a491eab (Save local changes before rebase)
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
@@ -14,24 +18,40 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
     private static final double ANNUAL_INTEREST_RATE = 0.065;
 
     public SavingsAccount(String iban, String accountHolderName, double balance) {
+<<<<<<< HEAD
         super(balance);
         this.iban = generateIban();
+=======
+        super(balance, iban);
+        this.iban = IdGenerator.generateIban("savings");
+>>>>>>> a491eab (Save local changes before rebase)
         this.accountHolderName = accountHolderName;
         this.accountOpeningDate = LocalDate.now();
         this.lastInterestDate = this.accountOpeningDate;
     }
 
+<<<<<<< HEAD
     @Override
     public String generateIban() {
         savingsCounter++;
         return String.format("SAV2252-%06d", savingsCounter);
     }
+=======
+>>>>>>> a491eab (Save local changes before rebase)
 
     @Override
     public String getIban() {
         return iban;
     }
 
+<<<<<<< HEAD
+=======
+    @Override
+    public String getAccountType() {
+        return "savings";
+    }
+
+>>>>>>> a491eab (Save local changes before rebase)
     public void applyDailyInterestAndCapitalize() {
         LocalDate today = LocalDate.now();
         long days = ChronoUnit.DAYS.between(lastInterestDate, today);
@@ -95,3 +115,7 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
         System.out.println("Last interest date: " + lastInterestDate);
     }
 }
+<<<<<<< HEAD
+=======
+`
+>>>>>>> a491eab (Save local changes before rebase)

@@ -3,13 +3,23 @@ package IndividualWork;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+<<<<<<< HEAD
+=======
+import java.util.UUID;
+
+>>>>>>> a491eab (Save local changes before rebase)
 @Getter
 @AllArgsConstructor
 
 public abstract class AbstractAccount implements Accounts {
     private double balance;
+<<<<<<< HEAD
 
     @Override
+=======
+    String iban;
+
+>>>>>>> a491eab (Save local changes before rebase)
     public void deposit(double amount) {
         try {
             if (amount <= 0) {

@@ -28,3 +28,6 @@ Phone: 098888888
 2025-05-29 21:22:05 INFO  [main] IndividualWork.AccountStorage - Account created successfully:
 2025-05-29 21:22:08 INFO  [main] IndividualWork.AccountStorage - Account: %s | Holder: %s%nGEN2251-001001hfj
 2025-05-29 21:22:08 INFO  [main] IndividualWork.AccountStorage - Account: %s | Holder: %s%nCARD2259-003001hfj
+
+2025-06-03 01:38:08 INFO  [main] IndividualWork.AccountManager - Account created successfully:
+

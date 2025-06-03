@@ -6,12 +6,21 @@ public class Validator {
         return password.matches(regex);
     }
 
+<<<<<<< HEAD
     public static boolean isValidIdNo(String idNo) {
         return idNo.matches("^[0-9]{13}$");
     }
 
     public static boolean isValidPhoneNumber(String phoneNumber) {
         return phoneNumber.matches("^0[0-9]{8}$");
+=======
+    public static boolean isValidIdno(String idno) {
+        return idno.matches("^[0-9]{13}$");
+    }
+
+    public static boolean isValidPhone(String phone) {
+        return phone.matches("^0[0-9]{8}$");
+>>>>>>> a491eab (Save local changes before rebase)
     }
 
     public static boolean isValidEmail(String email) {
@@ -27,8 +36,13 @@ public class Validator {
         return "Error: Invalid email format.";
     }
 
+<<<<<<< HEAD
     public static boolean isIdNoTaken(String idNo) {
         return UserRegistry.getAllUsers().stream().anyMatch(u -> u.getIdNo().equals(idNo));
+=======
+    public static boolean isIdnoTaken(String idno) {
+        return UserRegistry.getAllUsers().stream().anyMatch(u -> u.getIdno().equals(idno));
+>>>>>>> a491eab (Save local changes before rebase)
     }
 
     public static boolean isEmailTaken(String email) {
@@ -36,6 +50,10 @@ public class Validator {
     }
 
     public static boolean isPhoneTaken(String phone) {
+<<<<<<< HEAD
         return UserRegistry.getAllUsers().stream().anyMatch(u -> u.getPhoneNumber().equals(phone));
+=======
+        return UserRegistry.getAllUsers().stream().anyMatch(u -> u.getPhone().equals(phone));
+>>>>>>> a491eab (Save local changes before rebase)
     }
 }
