@@ -12,10 +12,13 @@ public class AccountManager {
     private static final Scanner scanner = new Scanner(System.in);
     private static User currentUser = null;
     private static Onboarding onboarding;
+    private static AccountStorage accountStorage;
 
     public static void main(String[] args) throws SQLException {
-        try (Connection connection = new DBConnect().getConnection()) {
+        {
+            Connection connection = new DBConnect().getConnection();
             onboarding = new Onboarding(connection);
+            accountStorage = new AccountStorage(connection);
 
             while (true) {
                 showMenu();
@@ -34,7 +37,10 @@ public class AccountManager {
                         case 9 -> withdrawFromCashOutAccount();
                         case 10 -> showAccountList();
                         case 11 -> removeAnAccount();
-                        case 12 -> exit();
+                        case 12 -> {
+                            connection.close();
+                            exit();
+                        }
                         default -> System.out.println("Invalid choice, please try again.");
                     }
                 } catch (Exception e) {
@@ -88,6 +94,7 @@ public class AccountManager {
 
     private static void openNewAccount() {
         if (currentUser == null) {
+
             System.out.println("Please onboard a user first (option 1).");
             return;
         }
@@ -123,7 +130,7 @@ public class AccountManager {
         };
 
         if (account != null) {
-            AccountStorage.addAccount(currentUser, account);
+            accountStorage.addAccount(currentUser, account);
             // System.out.println("Account created successfully:");
             logger.info("Account created successfully:");
             account.displayAccountDetails();

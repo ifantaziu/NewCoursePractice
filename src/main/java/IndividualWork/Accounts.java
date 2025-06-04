@@ -16,9 +16,7 @@ public interface Accounts {
 
     String getIban();
 
-    String[] accountType = {"card", "general", "savings"};
-
-    String getAccountType();
+    String getAccounttype();
 
     double getBalance();
 }

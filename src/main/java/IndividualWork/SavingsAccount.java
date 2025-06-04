@@ -7,16 +7,16 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
     private static int savingsCounter = 2000;
     private static final int maturityTermMonths = 6;
     private final String iban;
-    private final String accountHolderName;
+    private final String fullname;
     private final LocalDate accountOpeningDate;
     private LocalDate lastInterestDate;
 
     private static final double ANNUAL_INTEREST_RATE = 0.065;
 
-    public SavingsAccount(String iban, String accountHolderName, double balance) {
+    public SavingsAccount(String iban, String fullname, double balance) {
         super(balance, iban);
         this.iban = IdGenerator.generateIban("savings");
-        this.accountHolderName = accountHolderName;
+        this.fullname = fullname;
         this.accountOpeningDate = LocalDate.now();
         this.lastInterestDate = this.accountOpeningDate;
     }
@@ -28,7 +28,7 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
     }
 
     @Override
-    public String getAccountType() {
+    public String getAccounttype() {
         return "savings";
     }
 
@@ -89,7 +89,7 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
     public void displayAccountDetails() {
         System.out.println("=== Savings Account Details ===");
         System.out.println("IBAN: " + iban);
-        System.out.println("Account Holder: " + accountHolderName);
+        System.out.println("Account Holder: " + fullname);
         System.out.println("Opened on: " + accountOpeningDate);
         System.out.printf("Balance: %.2f MDL%n", getBalance());
         System.out.println("Last interest date: " + lastInterestDate);

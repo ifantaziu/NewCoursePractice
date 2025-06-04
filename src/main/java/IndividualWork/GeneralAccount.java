@@ -2,12 +2,12 @@ package IndividualWork;
 
 public class GeneralAccount extends AbstractAccount implements Accounts {
     private final String iban;
-    private final String accountHolderName;
+    private final String fullname;
 
-    public GeneralAccount(String iban, String accountHolderName, double balance) {
+    public GeneralAccount(String iban, String fullname, double balance) {
         super(balance, iban);
         this.iban = IdGenerator.generateIban("general");
-        this.accountHolderName = accountHolderName;
+        this.fullname = fullname;
     }
 
     @Override
@@ -16,12 +16,12 @@ public class GeneralAccount extends AbstractAccount implements Accounts {
     }
 
     @Override
-    public String getAccountType() {
+    public String getAccounttype() {
         return "general";
     }
 
-    public String getAccountHolderName() {
-        return accountHolderName;
+    public String getFullname() {
+        return fullname;
     }
 
 
@@ -40,7 +40,7 @@ public class GeneralAccount extends AbstractAccount implements Accounts {
     public void displayAccountDetails() {
         System.out.println("Account details ");
         System.out.println("Account with IBAN: " + getIban());
-        System.out.println("Account holder name is: " + getAccountHolderName());
+        System.out.println("Account holder name is: " + getFullname());
         System.out.println("General account balance: " + getBalance() + " MDL");
         System.out.println();
     }

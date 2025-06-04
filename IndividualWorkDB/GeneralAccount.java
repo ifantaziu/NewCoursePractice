@@ -40,7 +40,7 @@ public class GeneralAccount extends AbstractAccount implements Accounts {
     public void displayAccountDetails() {
         System.out.println("Account details ");
         System.out.println("Account with IBAN: " + getIban());
-        System.out.println("Account holder name is: " + getAccountHolderName());
+        System.out.println("Account holder name is: " + getFullname());
         System.out.println("General account balance: " + getBalance() + " MDL");
         System.out.println();
     }

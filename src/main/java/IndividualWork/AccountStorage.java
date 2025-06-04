@@ -19,42 +19,53 @@ public class AccountStorage {
     private static final Logger logger = LoggerFactory.getLogger(AccountStorage.class);
     private static final Map<User, List<Accounts>> userAccounts = new HashMap<>();
     private static final Map<User, Map<Currency, CurrencyCashOutAccount>> userCurrencyCashOutAccounts = new HashMap<>();
+    private final Connection connection;
+
+    public AccountStorage(Connection connection) {
+        this.connection = connection;
+    }
+//    public static void main(String[] args) {
+//        User user = new User("John Doe", "7776665554345", "CL-115844", "joe@mai.com", "010776333", "hgjhk", "jhgf@fghAGD5678");
+//        Accounts acc = new GeneralAccount("7776665554345", "John Doe", 100.0);
+//        AccountStorage.addAccount(user, acc);
+//    }
+
+    // public static void addAccount(String username, String fullName, double balance, String type, boolean issueCard, String deliveryAddress) {
+    public Accounts addAccount(User user, Accounts account) {
+        String iban;
+
+        if (account instanceof GeneralAccount) {
+            iban = IdGenerator.generateIban("general");
+        } else if (account instanceof SavingsAccount) {
+            iban = IdGenerator.generateIban("savings");
+        } else if (account instanceof CardAccount) {
+            iban = IdGenerator.generateIban("card");
+        } else {
+            System.out.println("Unknown account type.");
+            return account;
+        }
 
 
-   // public static void addAccount(String username, String fullName, double balance, String type, boolean issueCard, String deliveryAddress) {
-   public static void addAccount(User user, Accounts account) {
-       String iban;
+        String sql = "INSERT INTO accounts (iban, accounttype, username, balance, fullname, issuecard, deliveryaddress) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        try {
+            PreparedStatement ps = connection.prepareStatement(sql);
 
-       if (account instanceof GeneralAccount) {
-           iban = IdGenerator.generateIban("general");
-       } else if (account instanceof SavingsAccount) {
-           iban = IdGenerator.generateIban("savings");
-       } else if (account instanceof CardAccount) {
-           iban = IdGenerator.generateIban("card");
-       } else {
-           System.out.println("Unknown account type.");
-           return;
-       }
+            ps.setString(1, iban);
+            ps.setString(2, account.getAccounttype());
+            ps.setString(3, user.getUsername());
+            ps.setDouble(4, account.getBalance());
+            ps.setString(5, user.getFullname());
+            ps.setBoolean(6, account instanceof CardAccount);
+            ps.setString(7, (account instanceof CardAccount) ? ((CardAccount) account).getCardDeliveryAddress() : null);
 
-       try (Connection conn = new DBConnect().getConnection()) {
-           String sql = "INSERT INTO accounts (username, fullname, iban, balance, type, issue_card, delivery_address) VALUES (?, ?, ?, ?, ?, ?, ?)";
-           PreparedStatement ps = conn.prepareStatement(sql);
-
-           ps.setString(1, user.getUsername());
-           ps.setString(2, user.getFullname());
-           ps.setString(3, iban);
-           ps.setDouble(4, account.getBalance());
-           ps.setString(5, account.getAccountType());
-           ps.setBoolean(6, account instanceof CardAccount);
-           ps.setString(7, (account instanceof CardAccount) ? ((CardAccount) account).getCardDeliveryAddress() : null);
-
-           ps.executeUpdate();
-           System.out.println("Account created successfully with IBAN: " + iban);
-       } catch (SQLException e) {
-           System.out.println("Account creation failed: " + e.getMessage());
-       }
-   }
-
+            System.out.println(">> Se execută INSERT în baza de date...");
+            ps.executeUpdate();
+            System.out.println("Account created successfully with IBAN: " + iban);
+        } catch (SQLException e) {
+            System.out.println("Account creation failed: " + e.getMessage());
+        }
+        return account;
+    }
 
 
     public static List<Accounts> getUserAccounts(User user) {

@@ -53,6 +53,7 @@ public class Onboarding {
                 stmt.setString(6, password);
                 stmt.setString(7, clientid);
                 stmt.executeUpdate();
+               // connection.commit();
             }
 
             System.out.println("User registered successfully. Your Client ID is: " + clientid);
@@ -170,7 +171,7 @@ public class Onboarding {
             try (PreparedStatement stmt = connection.prepareStatement(sql)) {
                 stmt.setString(1, username);
 
-                stmt.setString(6, password);
+                stmt.setString(2, password);
 
 
                 ResultSet rs = stmt.executeQuery();

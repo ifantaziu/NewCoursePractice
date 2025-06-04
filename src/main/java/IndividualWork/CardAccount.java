@@ -2,13 +2,13 @@ package IndividualWork;
 
 public class CardAccount extends AbstractAccount implements Accounts {
     private final String iban;
-    private final String accountHolderName;
+    private final String fullname;
     private String cardDeliveryAddress = null;
 
-    public CardAccount(String iban, String accountHolderName, double balance, String cardDeliveryAddress) {
+    public CardAccount(String iban, String fullname, double balance, String cardDeliveryAddress) {
         super(balance, iban);
         this.iban = IdGenerator.generateIban("card");
-        this.accountHolderName = accountHolderName;
+        this.fullname = fullname;
         this.cardDeliveryAddress = cardDeliveryAddress;
     }
 
@@ -19,7 +19,7 @@ public class CardAccount extends AbstractAccount implements Accounts {
     }
 
     @Override
-    public String getAccountType() {
+    public String getAccounttype() {
         return "card";
     }
 
@@ -47,7 +47,7 @@ public class CardAccount extends AbstractAccount implements Accounts {
     public void displayAccountDetails() {
         System.out.println("=== Card Account Details ===");
         System.out.println("IBAN: " + iban);
-        System.out.println("Account Holder: " + accountHolderName);
+        System.out.println("Account Holder: " + fullname);
         System.out.printf("Balance: %.2f MDL%n", getBalance());
         if (cardDeliveryAddress != null && !cardDeliveryAddress.isEmpty()) {
             System.out.println("Card delivery address: " + cardDeliveryAddress);
