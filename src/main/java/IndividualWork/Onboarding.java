@@ -1,6 +1,5 @@
 package IndividualWork;
 
-import java.sql.*;
 import java.util.Scanner;
 
 import static IndividualWork.Validator.*;
@@ -17,53 +16,33 @@ public class Onboarding {
     }
 
     public User onboardNewUser() {
-        try {
-            System.out.println("Welcome to your lifetime bank!");
 
-            String fullname = onboardfullname();
-            String idno = onboardidno();
+        System.out.println("Welcome to your lifetime bank!");
 
-            String email = onboardEmail();
-            String phone = onboardPhone();
-            String username = onboardUsername();
-            String password = onboardPassword();
+        String fullname = onboardfullname();
+        String idno = onboardidno();
 
-            String clientid = IdGenerator.generateClientid();
-            // Create user
-            //User user = new User(fullName, idno, email, phone, username, password, clientId);
+        String email = onboardEmail();
+        String phone = onboardPhone();
+        String username = onboardUsername();
+        String password = onboardPassword();
 
-            String sql = "INSERT INTO users (username, fullname, idno, email, phone, password, clientid) " +
+        String clientid = IdGenerator.generateClientid();
+        // Create user
+        User user = new User(username, fullname, idno, email, phone, password, clientid);
 
-                    "VALUES (?, ?, ?, ?, ?, ?, ?)";
+//
+        // Register user
+        UserRepository.registerUser(user);
 
-            // Register user
-            // UserRegistry.registerUser(user);
+        // System.out.println("\n User created successfully:");
+        // System.out.println(user);
 
-            // System.out.println("\n User created successfully:");
-            // System.out.println(user);
+        // return user;
 
-            // return user;
-            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
+        System.out.println("User registered successfully. Your Client ID is: " + clientid);
+        return new User(username, fullname, idno, email, phone, password, clientid);
 
-                stmt.setString(1, username);
-                stmt.setString(2, fullname);
-                stmt.setString(3, idno);
-                stmt.setString(4, email);
-                stmt.setString(5, phone);
-                stmt.setString(6, password);
-                stmt.setString(7, clientid);
-                stmt.executeUpdate();
-               // connection.commit();
-            }
-
-            System.out.println("User registered successfully. Your Client ID is: " + clientid);
-            return new User(username, fullname, idno, email, phone, password, clientid);
-
-
-        } catch (SQLException e) {
-            System.err.println("Error during registration: " + e.getMessage());
-            return null;
-        }
     }
 
 
@@ -133,7 +112,7 @@ public class Onboarding {
         while (true) {
             System.out.print("Please choose a username: ");
             String username = scanner.nextLine();
-            if (!UserRegistry.usernameExists(username)) {
+            if (!UserRepository.usernameExists(username)) {
                 return username;
             }
             System.out.println("Username already exists. Please choose another.");
@@ -159,43 +138,15 @@ public class Onboarding {
     }
 
     public User loginUser() {
-        try {
-            System.out.print("For login, please enter your username: ");
-            String username = scanner.nextLine();
 
-            System.out.print("Password: ");
-            String password = scanner.nextLine();
+        System.out.print("For login, please enter your username: ");
+        String username = scanner.nextLine();
 
-            String sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+        System.out.print("Password: ");
+        String password = scanner.nextLine();
 
-            try (PreparedStatement stmt = connection.prepareStatement(sql)) {
-                stmt.setString(1, username);
+       return UserRepository.login(username, password);
 
-                stmt.setString(2, password);
-
-
-                ResultSet rs = stmt.executeQuery();
-                if (rs.next()) {
-                    String idno = rs.getString("idno");
-
-                    String fullname = rs.getString("fullname");
-                    String email = rs.getString("email");
-                    String phone = rs.getString("phone");
-                    String clientid = rs.getString("clientid");
-
-                    System.out.println("Login successful. Welcome, " + fullname + "!");
-                    return new User(username, fullname, idno, email, phone, password, clientid);
-
-                } else {
-                    System.out.println("Invalid username or password.");
-                    return null;
-                }
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error during login: " + e.getMessage());
-            return null;
-        }
     }
 }
 

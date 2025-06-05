@@ -28,14 +28,14 @@ public class Validator {
     }
 
     public static boolean isIdnoTaken(String idno) {
-        return UserRegistry.getAllUsers().stream().anyMatch(u -> u.getIdno().equals(idno));
+        return UserRepository.getAllUsers().stream().anyMatch(u -> u.getIdno().equals(idno));
     }
 
     public static boolean isEmailTaken(String email) {
-        return UserRegistry.getAllUsers().stream().anyMatch(u -> u.getEmail().equalsIgnoreCase(email));
+        return UserRepository.getAllUsers().stream().anyMatch(u -> u.getEmail().equalsIgnoreCase(email));
     }
 
     public static boolean isPhoneTaken(String phone) {
-        return UserRegistry.getAllUsers().stream().anyMatch(u -> u.getPhone().equals(phone));
+        return UserRepository.getAllUsers().stream().anyMatch(u -> u.getPhone().equals(phone));
     }
 }

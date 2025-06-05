@@ -1,5 +1,8 @@
 package IndividualWork;
 
+import lombok.Getter;
+
+@Getter
 public class GeneralAccount extends AbstractAccount implements Accounts {
     private final String iban;
     private final String fullname;

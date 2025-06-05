@@ -1,10 +1,11 @@
 package IndividualWork;
 
+import lombok.Getter;
+
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-
+@Getter
 public class SavingsAccount extends AbstractAccount implements Accounts {
-    private static int savingsCounter = 2000;
     private static final int maturityTermMonths = 6;
     private final String iban;
     private final String fullname;
@@ -21,7 +22,13 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
         this.lastInterestDate = this.accountOpeningDate;
     }
 
+    public void setAccountOpeningDate(LocalDate date) {
+        this.accountOpeningDate = date;
+    }
 
+    public void setLastInterestDate(LocalDate date) {
+        this.lastInterestDate = date;
+    }
     @Override
     public String getIban() {
         return iban;

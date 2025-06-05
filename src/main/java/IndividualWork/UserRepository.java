@@ -1,14 +1,23 @@
 package IndividualWork;
 
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
 
+@Slf4j
 public class UserRepository {
+    private static final Logger logger = LoggerFactory.getLogger(UserRepository.class);
 
     public static boolean registerUser(User user) {
-        String sql = "INSERT INTO users (username, fullname, idno, email, phone, password, bank_client_id) " +
+        String sql = "INSERT INTO users (username, fullname, idno, email, phone, password, clientid) " +
+
                 "VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -41,6 +50,7 @@ public class UserRepository {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
+                log.info("Login successful. Welcome, {}!", User.getFullname());
                 return new User(
                         rs.getString("fullname"),
                         rs.getString("idno"),
@@ -50,7 +60,9 @@ public class UserRepository {
                         rs.getString("username"),
                         rs.getString("password")
                 );
+
             } else {
+                System.out.println("Invalid username or password.");
                 return null; // login failed
             }
 
@@ -74,6 +86,7 @@ public class UserRepository {
             return false;
         }
     }
+
     public static User getUserByUsername(String username) {
         String sql = "SELECT * FROM users WHERE username = ?";
         try (Connection conn = DBConnect.getConnection();
@@ -98,6 +111,7 @@ public class UserRepository {
             throw new RuntimeException("Error fetching user: " + e.getMessage(), e);
         }
     }
+
     public static void listAllUsers() {
         String sql = "SELECT * FROM users";
         try (Connection conn = DBConnect.getConnection();
@@ -118,5 +132,29 @@ public class UserRepository {
         } catch (SQLException e) {
             throw new RuntimeException("Error listing users: " + e.getMessage(), e);
         }
+    }
+
+    public static Collection<User> getAllUsers() {
+        Collection<User> users = new ArrayList<>();
+        String sql = "SELECT * FROM users";
+        try (Connection conn = DBConnect.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                User user = new User(
+                        rs.getString("fullname"),
+                        rs.getString("idno"),
+                        rs.getString("clientid"),
+                        rs.getString("email"),
+                        rs.getString("phone"),
+                        rs.getString("username"),
+                        rs.getString("password")
+                );
+                users.add(user);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error fetching users: " + e.getMessage(), e);
+        }
+        return users;
     }
 }
