@@ -9,7 +9,7 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
     private static final int maturityTermMonths = 6;
     private final String iban;
     private final String fullname;
-    private final LocalDate accountOpeningDate;
+    private LocalDate accountOpeningDate;
     private LocalDate lastInterestDate;
 
     private static final double ANNUAL_INTEREST_RATE = 0.065;
