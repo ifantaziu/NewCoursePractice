@@ -69,7 +69,7 @@ public class AccountsRepository {
 
     public static Collection<Accounts> getAllAccountsForUser(String username) {
         Collection<Accounts> accounts = new ArrayList<>();
-        String sql = "SELECT * FROM accounts WHERE fullname = ?";
+        String sql = "SELECT * FROM accounts WHERE username = ?";
 
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
