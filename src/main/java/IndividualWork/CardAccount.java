@@ -6,13 +6,13 @@ import lombok.Getter;
 public class CardAccount extends AbstractAccount implements Accounts {
     private final String iban;
     private final String fullname;
-    private String cardDeliveryAddress = null;
+    private String carddeliveryaddress = null;
 
-    public CardAccount(String iban, String fullname, double balance, String cardDeliveryAddress) {
+    public CardAccount(String iban, String fullname, double balance, String carddeliveryaddress) {
         super(balance, iban);
         this.iban = IdGenerator.generateIban("card");
         this.fullname = fullname;
-        this.cardDeliveryAddress = cardDeliveryAddress;
+        this.carddeliveryaddress = carddeliveryaddress;
     }
 
 
@@ -26,8 +26,8 @@ public class CardAccount extends AbstractAccount implements Accounts {
         return "card";
     }
 
-    public String getCardDeliveryAddress() {
-        return cardDeliveryAddress;
+    public String getCarddeliveryaddress() {
+        return carddeliveryaddress;
     }
 
     public void makePayment(double amount, String merchant) {
@@ -52,8 +52,8 @@ public class CardAccount extends AbstractAccount implements Accounts {
         System.out.println("IBAN: " + iban);
         System.out.println("Account Holder: " + fullname);
         System.out.printf("Balance: %.2f MDL%n", getBalance());
-        if (cardDeliveryAddress != null && !cardDeliveryAddress.isEmpty()) {
-            System.out.println("Card delivery address: " + cardDeliveryAddress);
+        if (carddeliveryaddress != null && !carddeliveryaddress.isEmpty()) {
+            System.out.println("Card delivery address: " + carddeliveryaddress);
         } else {
             System.out.println("No physical card issued.");
         }

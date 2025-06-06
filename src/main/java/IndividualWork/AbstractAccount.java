@@ -2,10 +2,12 @@ package IndividualWork;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.util.UUID;
 
 @Getter
+@Setter
 @AllArgsConstructor
 
 public abstract class AbstractAccount implements Accounts {
@@ -25,7 +27,7 @@ public abstract class AbstractAccount implements Accounts {
     }
 
     @Override
-    public void withdrawal(double amount) {
+    public void withdrawal(double amount) throws InvalidAmountException, InsufficientFundsException {
         try {
             if (amount <= 0) {
                 throw new InvalidAmountException("Invalid withdrawal amount.");

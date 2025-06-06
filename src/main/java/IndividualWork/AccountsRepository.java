@@ -7,7 +7,10 @@ import java.util.Collection;
 
 public class AccountsRepository {
 
-    private static final Connection connection = DBConnect.getConnection();
+    private static Connection connection = DBConnect.getConnection();
+    public AccountsRepository(Connection connection) {
+        this.connection = connection;
+    }
 
     public Accounts addAccount(User user, Accounts account) {
         String iban;
@@ -25,7 +28,7 @@ public class AccountsRepository {
 
         String sql = """
                 INSERT INTO accounts 
-                (iban, accounttype, username, balance, fullname, issuecard, deliveryaddress, account_opening_date, last_interest_date) 
+                (iban, accounttype, username, balance, fullname, issuecard, deliveryaddress, accountopeningdate, lastinterestdate) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
@@ -36,16 +39,16 @@ public class AccountsRepository {
             ps.setDouble(4, account.getBalance());
             ps.setString(5, user.getFullname());
 
-            // Card specific
+            // Card Account
             if (account instanceof CardAccount card) {
                 ps.setBoolean(6, true);
-                ps.setString(7, card.getCardDeliveryAddress());
+                ps.setString(7, card.getCarddeliveryaddress());
             } else {
                 ps.setBoolean(6, false);
                 ps.setString(7, null);
             }
 
-            // Savings specific
+            // Savings account
             if (account instanceof SavingsAccount savings) {
                 ps.setDate(8, Date.valueOf(LocalDate.now()));
                 ps.setDate(9, Date.valueOf(LocalDate.now()));
@@ -64,19 +67,20 @@ public class AccountsRepository {
         return account;
     }
 
-    public static Collection<Accounts> getAllAccountsForUser(String fullname) {
+    public static Collection<Accounts> getAllAccountsForUser(String username) {
         Collection<Accounts> accounts = new ArrayList<>();
         String sql = "SELECT * FROM accounts WHERE fullname = ?";
 
         try (Connection conn = DBConnect.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
-            stmt.setString(1, fullname);
+            stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
                 String type = rs.getString("account_type").toLowerCase();
                 String iban = rs.getString("iban");
+                String fullname = rs.getString("fulname");
                 double balance = rs.getDouble("balance");
 
                 switch (type) {
@@ -93,9 +97,9 @@ public class AccountsRepository {
                         LocalDate openingDate = rs.getDate("account_opening_date").toLocalDate();
                         LocalDate lastInterestDate = rs.getDate("last_interest_date").toLocalDate();
                         SavingsAccount savings = new SavingsAccount(iban, fullname, balance);
-                        // Suprascriem datele reale
-                        savings.setAccountOpeningDate(openingDate);
-                        savings.setLastInterestDate(lastInterestDate);
+
+                        savings.setAccountopeningdate(openingDate);
+                        savings.setLastinterestdate(lastInterestDate);
                         accounts.add(savings);
                     }
                     default -> System.out.println("Unknown account type: " + type);
@@ -108,8 +112,101 @@ public class AccountsRepository {
 
         return accounts;
     }
+    public static void updateAccountBalance(String iban, double newBalance) {
+        String sql = "UPDATE accounts SET balance = ? WHERE iban = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setDouble(1, newBalance);
+            ps.setString(2, iban);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                System.out.println("Account balance updated successfully.");
+            } else {
+                System.out.println("No account found with the provided IBAN.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error updating account balance: " + e.getMessage());
+        }
+    }
+    public static void deleteAccount(String iban) {
+        String sql = "DELETE FROM accounts WHERE iban = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, iban);
+            int rows = ps.executeUpdate();
+            if (rows > 0) {
+                System.out.println("Account deleted successfully.");
+            } else {
+                System.out.println("No account found with the provided IBAN.");
+            }
+        } catch (SQLException e) {
+            System.out.println("Error deleting account: " + e.getMessage());
+        }
+    }
+    public static Accounts findAccountByIban(String iban) {
+        String sql = "SELECT * FROM accounts WHERE iban = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, iban);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                String type = rs.getString("accounttype");
+                String fullname = rs.getString("fullname");
+                double balance = rs.getDouble("balance");
 
+                switch (type) {
+                    case "general":
+                        return new GeneralAccount(iban, fullname, balance);
+                    case "savings":
+                        return new SavingsAccount(iban, fullname, balance);
+                    case "card":
+                        String deliveryAddress = rs.getString("deliveryaddress");
+                        return new CardAccount(iban, fullname, balance, deliveryAddress);
+                    case "currency":
+                        String currencyStr = rs.getString("currency");
+                        Currency currency = Currency.valueOf(currencyStr);
+                        return new CurrencyCashOutAccount(currency, balance);
+                    default:
+                        System.out.println("Unknown account type found in database.");
+                }
+            }
+        } catch (SQLException e) {
+            System.out.println("Error retrieving account: " + e.getMessage());
+        }
+        return null;
+    }
+    public static void initializeCurrencyAccounts(User user) {
+        for (Currency currency : Currency.values()) {
+            CurrencyCashOutAccount account = new CurrencyCashOutAccount(currency, 0.0);
+            String iban = account.getIban();
 
-    // Similar poți adăuga metode: getAllGeneralAccounts(), getAllSavingsAccounts()
+            String sql = "INSERT INTO accounts (iban, accounttype, username, balance, fullname, currency) VALUES (?, ?, ?, ?, ?, ?)";
+            try (PreparedStatement ps = connection.prepareStatement(sql)) {
+                ps.setString(1, iban);
+                ps.setString(2, account.getAccounttype());
+                ps.setString(3, user.getUsername());
+                ps.setDouble(4, account.getBalance());
+                ps.setString(5, user.getFullname());
+                ps.setString(6, currency.name());
+
+                ps.executeUpdate();
+            } catch (SQLException e) {
+                System.out.println("Failed to initialize currency account: " + e.getMessage());
+            }
+        }
+    }
+    public static CurrencyCashOutAccount getCurrencyCashOutAccount(User user, Currency currency) {
+        String sql = "SELECT * FROM accounts WHERE username = ? AND accounttype = 'currency' AND currency = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, user.getUsername());
+            ps.setString(2, currency.name());
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                double balance = rs.getDouble("balance");
+                return new CurrencyCashOutAccount(currency, balance);
+            }
+        } catch (SQLException e) {
+            System.out.println("Error fetching currency cash out account: " + e.getMessage());
+        }
+        return null;
+    }
 
 }

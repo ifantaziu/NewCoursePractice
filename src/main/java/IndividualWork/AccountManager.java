@@ -12,13 +12,14 @@ public class AccountManager {
     private static final Scanner scanner = new Scanner(System.in);
     private static User currentUser = null;
     private static Onboarding onboarding;
-    private static AccountStorage accountStorage;
+    private static AccountsRepository accountsRepository;
+
 
     public static void main(String[] args) throws SQLException {
         {
             Connection connection = new DBConnect().getConnection();
             onboarding = new Onboarding(connection);
-            accountStorage = new AccountStorage(connection);
+            accountsRepository = new AccountsRepository(connection);
 
             while (true) {
                 showMenu();
@@ -81,7 +82,6 @@ public class AccountManager {
         currentUser = onboarding.onboardNewUser();
         if (currentUser != null) {
             logger.info("New user onboarded: " + currentUser);
-            AccountStorage.initializeCurrencyAccount(currentUser);
         }
     }
 
@@ -130,11 +130,15 @@ public class AccountManager {
         };
 
         if (account != null) {
-            accountStorage.addAccount(currentUser, account);
+            accountsRepository.addAccount(currentUser, account);
             // System.out.println("Account created successfully:");
             logger.info("Account created successfully:");
             account.displayAccountDetails();
         }
+    }
+
+    private static void showAccountList() {
+        AccountsRepository.getAllAccountsForUser(currentUser.getUsername());
     }
 
     private static void makePayment() {
@@ -192,7 +196,7 @@ public class AccountManager {
 
     private static Accounts findAccountByIban(String iban) {
         try {
-            return AccountStorage.findAccountByIban(currentUser, iban);
+            return AccountsRepository.findAccountByIban(iban);
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());
             return null;
@@ -209,7 +213,7 @@ public class AccountManager {
             return;
         }
 
-        CurrencyCashOutAccount cashOutAccount = AccountStorage.getCurrencyCashOutAccount(currentUser, currency);
+        CurrencyCashOutAccount cashOutAccount = AccountsRepository.getCurrencyCashOutAccount(currentUser, currency);
         if (cashOutAccount == null) {
             System.out.println("Cash-out account not found.");
             return;
@@ -235,6 +239,8 @@ public class AccountManager {
             System.out.printf("%s: %.2f MDL%n", currency, currency.getExchangeRate());
         }
         while (true) {
+
+            AccountsRepository.initializeCurrencyAccounts(currentUser);
             System.out.print("Select currency to convert FROM (e.g. USD): ");
             Currency fromCurrency = Currency.valueOf(scanner.nextLine().toUpperCase());
 
@@ -309,14 +315,11 @@ public class AccountManager {
         }
     }
 
-    private static void showAccountList() {
-        AccountStorage.showAllAccounts(currentUser);
-    }
 
     private static void removeAnAccount() {
         System.out.print("Enter the account IBAN: ");
         String iban = scanner.nextLine();
-        AccountStorage.removeAccount(currentUser, iban);
+        AccountsRepository.deleteAccount(iban);
     }
 
     private static void exit() {

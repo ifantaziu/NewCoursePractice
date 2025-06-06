@@ -54,7 +54,7 @@ public class UserRepository {
                 return new User(
                         rs.getString("fullname"),
                         rs.getString("idno"),
-                        rs.getString("bank_client_id"),
+                        rs.getString("clientid"),
                         rs.getString("email"),
                         rs.getString("phone"),
                         rs.getString("username"),

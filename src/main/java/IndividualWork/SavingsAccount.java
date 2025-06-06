@@ -9,8 +9,8 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
     private static final int maturityTermMonths = 6;
     private final String iban;
     private final String fullname;
-    private LocalDate accountOpeningDate;
-    private LocalDate lastInterestDate;
+    private LocalDate accountopeningdate;
+    private LocalDate lastinterestdate;
 
     private static final double ANNUAL_INTEREST_RATE = 0.065;
 
@@ -18,16 +18,16 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
         super(balance, iban);
         this.iban = IdGenerator.generateIban("savings");
         this.fullname = fullname;
-        this.accountOpeningDate = LocalDate.now();
-        this.lastInterestDate = this.accountOpeningDate;
+        this.accountopeningdate = LocalDate.now();
+        this.lastinterestdate = this.accountopeningdate;
     }
 
-    public void setAccountOpeningDate(LocalDate date) {
-        this.accountOpeningDate = date;
+    public void setAccountopeningdate(LocalDate date) {
+        this.accountopeningdate = date;
     }
 
-    public void setLastInterestDate(LocalDate date) {
-        this.lastInterestDate = date;
+    public void setLastinterestdate(LocalDate date) {
+        this.lastinterestdate = date;
     }
     @Override
     public String getIban() {
@@ -41,7 +41,7 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
 
     public void applyDailyInterestAndCapitalize() {
         LocalDate today = LocalDate.now();
-        long days = ChronoUnit.DAYS.between(lastInterestDate, today);
+        long days = ChronoUnit.DAYS.between(lastinterestdate, today);
 
         if (days <= 0) {
             System.out.println("No new interest to apply today.");
@@ -55,7 +55,7 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
             double balance = getBalance() + interest;
         }
 
-        lastInterestDate = today;
+        lastinterestdate = today;
 
         System.out.printf("Applied and capitalized interest for %d day(s). New balance: %.2f MDL%n", days, getBalance());
     }
@@ -66,7 +66,7 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
             if (amount <= 0) {
                 throw new InvalidAmountException("Withdrawal amount must be greater than zero.");
             }
-            if (ChronoUnit.MONTHS.between(accountOpeningDate, LocalDate.now()) < 6) {
+            if (ChronoUnit.MONTHS.between(accountopeningdate, LocalDate.now()) < 6) {
                 throw new AccountNotMatureException("Cannot withdraw before account matures (6 months).");
             }
             if (amount > getBalance()) {
@@ -97,8 +97,8 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
         System.out.println("=== Savings Account Details ===");
         System.out.println("IBAN: " + iban);
         System.out.println("Account Holder: " + fullname);
-        System.out.println("Opened on: " + accountOpeningDate);
+        System.out.println("Opened on: " + accountopeningdate);
         System.out.printf("Balance: %.2f MDL%n", getBalance());
-        System.out.println("Last interest date: " + lastInterestDate);
+        System.out.println("Last interest date: " + lastinterestdate);
     }
 }
