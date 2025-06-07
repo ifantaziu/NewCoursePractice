@@ -4,6 +4,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+
 @Getter
 public class SavingsAccount extends AbstractAccount implements Accounts {
     private static final int maturityTermMonths = 6;
@@ -11,6 +12,7 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
     private final String fullname;
     private LocalDate accountopeningdate;
     private LocalDate lastinterestdate;
+    private double lastInterestApplied = 0.0;
 
     private static final double ANNUAL_INTEREST_RATE = 0.065;
 
@@ -20,6 +22,7 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
         this.fullname = fullname;
         this.accountopeningdate = LocalDate.now();
         this.lastinterestdate = this.accountopeningdate;
+
     }
 
     public void setAccountopeningdate(LocalDate date) {
@@ -29,6 +32,7 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
     public void setLastinterestdate(LocalDate date) {
         this.lastinterestdate = date;
     }
+
     @Override
     public String getIban() {
         return iban;
@@ -39,23 +43,31 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
         return "savings";
     }
 
+    public double getLastInterestApplied() {
+        return lastInterestApplied;
+    }
+
     public void applyDailyInterestAndCapitalize() {
         LocalDate today = LocalDate.now();
         long days = ChronoUnit.DAYS.between(lastinterestdate, today);
 
         if (days <= 0) {
             System.out.println("No new interest to apply today.");
+            lastInterestApplied = 0.0;
             return;
         }
 
         double dailyRate = ANNUAL_INTEREST_RATE / 365;
+        double totalInterest = 0.0;
 
         for (int i = 0; i < days; i++) {
             double interest = getBalance() * dailyRate;
-            double balance = getBalance() + interest;
+            totalInterest += interest;
+            setBalance(getBalance() + interest);
         }
 
         lastinterestdate = today;
+        lastInterestApplied = totalInterest;
 
         System.out.printf("Applied and capitalized interest for %d day(s). New balance: %.2f MDL%n", days, getBalance());
     }

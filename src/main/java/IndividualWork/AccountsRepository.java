@@ -78,14 +78,14 @@ public class AccountsRepository {
             ResultSet rs = stmt.executeQuery();
 
             while (rs.next()) {
-                String type = rs.getString("account_type").toLowerCase();
+                String type = rs.getString("accounttype").toLowerCase();
                 String iban = rs.getString("iban");
-                String fullname = rs.getString("fulname");
+                String fullname = rs.getString("fullname");
                 double balance = rs.getDouble("balance");
 
                 switch (type) {
                     case "card" -> {
-                        String deliveryAddress = rs.getString("card_delivery_address");
+                        String deliveryAddress = rs.getString("carddeliveryaddress");
                         CardAccount card = new CardAccount(iban, fullname, balance, deliveryAddress);
                         accounts.add(card);
                     }
@@ -94,8 +94,8 @@ public class AccountsRepository {
                         accounts.add(general);
                     }
                     case "savings" -> {
-                        LocalDate openingDate = rs.getDate("account_opening_date").toLocalDate();
-                        LocalDate lastInterestDate = rs.getDate("last_interest_date").toLocalDate();
+                        LocalDate openingDate = rs.getDate("accountopeningdate").toLocalDate();
+                        LocalDate lastInterestDate = rs.getDate("lastinterestdate").toLocalDate();
                         SavingsAccount savings = new SavingsAccount(iban, fullname, balance);
 
                         savings.setAccountopeningdate(openingDate);
@@ -208,5 +208,15 @@ public class AccountsRepository {
         }
         return null;
     }
-
+    public static Accounts findMDLAccount(User user) {
+        Collection<Accounts> allAccounts = AccountsRepository.getAllAccountsForUser(user.getUsername());
+        for (Accounts account : allAccounts) {
+            String type = account.getAccounttype().toLowerCase();
+            if (type.equals("general") || type.equals("savings") || type.equals("card")) {
+                return account;
+            }
+        }
+        System.out.println("No MDL account found for user: " + user.getUsername());
+        return null;
+    }
 }

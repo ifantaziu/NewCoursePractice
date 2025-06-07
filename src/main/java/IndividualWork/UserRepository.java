@@ -23,7 +23,7 @@ public class UserRepository {
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setString(1, user.getUsername());
-            stmt.setString(2, User.getFullname());
+            stmt.setString(2, user.getFullname());
             stmt.setString(3, user.getIdno());
             stmt.setString(4, user.getEmail());
             stmt.setString(5, user.getPhone());

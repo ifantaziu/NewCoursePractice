@@ -31,17 +31,15 @@ public class Onboarding {
         // Create user
         User user = new User(username, fullname, idno, email, phone, password, clientid);
 
-//
-        // Register user
-        UserRepository.registerUser(user);
+        boolean registered = UserRepository.registerUser(user);
 
-        // System.out.println("\n User created successfully:");
-        // System.out.println(user);
-
-        // return user;
-
-        System.out.println("User registered successfully. Your Client ID is: " + clientid);
-        return new User(username, fullname, idno, email, phone, password, clientid);
+        if (registered) {
+            System.out.println("User registered successfully. Your Client ID is: " + clientid);
+            return user;
+        } else {
+            System.out.println("User registration failed. Please try again.");
+            return null;
+        }
 
     }
 

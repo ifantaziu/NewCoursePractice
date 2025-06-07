@@ -5,7 +5,11 @@ import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Scanner;
+
+import static IndividualWork.AccountsRepository.findMDLAccount;
 
 public class AccountManager {
     private static final Logger logger = LoggerFactory.getLogger(AccountManager.class);
@@ -13,6 +17,7 @@ public class AccountManager {
     private static User currentUser = null;
     private static Onboarding onboarding;
     private static AccountsRepository accountsRepository;
+    private static TransactionsRepository transactionsRepository;
 
 
     public static void main(String[] args) throws SQLException {
@@ -20,6 +25,7 @@ public class AccountManager {
             Connection connection = new DBConnect().getConnection();
             onboarding = new Onboarding(connection);
             accountsRepository = new AccountsRepository(connection);
+            transactionsRepository = new TransactionsRepository(connection);
 
             while (true) {
                 showMenu();
@@ -82,6 +88,8 @@ public class AccountManager {
         currentUser = onboarding.onboardNewUser();
         if (currentUser != null) {
             logger.info("New user onboarded: " + currentUser);
+        } else {
+            logger.error("User onboarding failed.");
         }
     }
 
@@ -151,10 +159,23 @@ public class AccountManager {
             System.out.print("Enter the merchant name: ");
             String merchant = scanner.nextLine();
             cardAccount.makePayment(amount, merchant);
+
+            AccountsRepository.updateAccountBalance(iban, cardAccount.getBalance());
+            TransactionsRepository.recordTransaction(
+                    currentUser.getUsername(),
+                    iban,
+                    null,
+                    "payment",
+                    amount,
+                    "MDL",
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    "Payment to merchant: " + merchant
+            );
         } else {
             System.out.println("Error: The specified IBAN does not belong to a Card Account.");
         }
     }
+
 
     private static void applyInterest() {
         System.out.print("Enter the Savings Account IBAN: ");
@@ -162,6 +183,20 @@ public class AccountManager {
         Accounts account = findAccountByIban(iban);
         if (account instanceof SavingsAccount savingsAccount) {
             savingsAccount.applyDailyInterestAndCapitalize();
+
+            AccountsRepository.updateAccountBalance(iban, savingsAccount.getBalance());
+
+            TransactionsRepository.recordTransaction(
+                    currentUser.getUsername(),
+                    null,
+                    iban,
+                    "interest",
+                    savingsAccount.getLastInterestApplied(),
+                    "MDL",
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    "Daily interest capitalization"
+            );
+
         } else {
             System.out.println("Error: The specified IBAN does not belong to a Savings Account.");
         }
@@ -178,10 +213,21 @@ public class AccountManager {
         System.out.print("Enter the amount to deposit: ");
         double amount = Double.parseDouble(scanner.nextLine());
         account.deposit(amount);
+
+        AccountsRepository.updateAccountBalance(iban, account.getBalance());
+        TransactionsRepository.recordTransaction(
+                currentUser.getUsername(),
+                null,
+                iban,
+                "deposit",
+                amount,
+                "MDL",
+                Timestamp.valueOf(LocalDateTime.now()),
+                "Deposit"
+        );
     }
 
-    private static void withdrawal() throws
-            InvalidAmountException, InsufficientFundsException, AccountNotMatureException {
+    private static void withdrawal() throws InvalidAmountException, InsufficientFundsException, AccountNotMatureException {
         System.out.print("Enter the account IBAN: ");
         String iban = scanner.nextLine();
         Accounts account = findAccountByIban(iban);
@@ -192,6 +238,18 @@ public class AccountManager {
         System.out.print("Enter the amount to withdraw: ");
         double amount = Double.parseDouble(scanner.nextLine());
         account.withdrawal(amount);
+
+        AccountsRepository.updateAccountBalance(iban, account.getBalance());
+        TransactionsRepository.recordTransaction(
+                currentUser.getUsername(),
+                iban,
+                null,
+                "withdrawal",
+                amount,
+                "MDL",
+                Timestamp.valueOf(LocalDateTime.now()),
+                "Withdrawal"
+        );
     }
 
     private static Accounts findAccountByIban(String iban) {
@@ -212,26 +270,35 @@ public class AccountManager {
             System.out.println("Invalid currency.");
             return;
         }
-
         CurrencyCashOutAccount cashOutAccount = AccountsRepository.getCurrencyCashOutAccount(currentUser, currency);
         if (cashOutAccount == null) {
             System.out.println("Cash-out account not found.");
             return;
         }
-
         System.out.print("Enter the amount to withdraw (multiple of 5): ");
         double amount = Double.parseDouble(scanner.nextLine());
         if (amount % 5 != 0) {
             System.out.println("You can only withdraw sums divisible by 5.");
             return;
         }
-
         try {
             cashOutAccount.withdrawal(amount);
+            AccountsRepository.updateAccountBalance(cashOutAccount.getIban(), cashOutAccount.getBalance());
+            TransactionsRepository.recordTransaction(
+                    currentUser.getUsername(),
+                    cashOutAccount.getIban(),
+                    null,
+                    "cashout",
+                    amount,
+                    currency.name(),
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    "Cash-out withdrawal in " + currency.name()
+            );
         } catch (Exception e) {
             System.out.println("Withdrawal failed: " + e.getMessage());
         }
     }
+
 
     private static void initiateCurrencyExchange() {
         System.out.println("Available currencies:");
@@ -250,20 +317,38 @@ public class AccountManager {
 
     public static void convertFromCurrencyToMDL(User user, Currency fromCurrency, Scanner scanner) {
         System.out.printf("Current exchange rate: 1 %s = %.2f MDL%n", fromCurrency, fromCurrency.getExchangeRate());
-
         System.out.print("Enter the amount in " + fromCurrency + " to convert: ");
         double amountInCurrency = scanner.nextDouble();
         scanner.nextLine();
-
         if (amountInCurrency % 5 != 0) {
             System.out.println("The amount must be divisible by 5 to proceed with cash-out.");
             return;
         }
-
         double convertedAmountMDL = fromCurrency.convertToMDL(amountInCurrency);
         System.out.printf("%.2f %s was successfully converted to %.2f MDL.%n",
                 amountInCurrency, fromCurrency, convertedAmountMDL);
-
+        CurrencyCashOutAccount fromAccount = AccountsRepository.getCurrencyCashOutAccount(user, fromCurrency);
+        Accounts mdlAccount = findMDLAccount(user);
+        if (fromAccount != null && mdlAccount != null) {
+            try {
+                fromAccount.withdrawal(amountInCurrency);
+                mdlAccount.deposit(convertedAmountMDL);
+                AccountsRepository.updateAccountBalance(fromAccount.getIban(), fromAccount.getBalance());
+                AccountsRepository.updateAccountBalance(mdlAccount.getIban(), mdlAccount.getBalance());
+                TransactionsRepository.recordTransaction(
+                        user.getUsername(),
+                        fromAccount.getIban(),
+                        mdlAccount.getIban(),
+                        "currency-exchange",
+                        convertedAmountMDL,
+                        "MDL",
+                        Timestamp.valueOf(LocalDateTime.now()),
+                        String.format("Converted %.2f %s to %.2f MDL", amountInCurrency, fromCurrency.name(), convertedAmountMDL)
+                );
+            } catch (Exception e) {
+                System.out.println("Currency exchange failed: " + e.getMessage());
+            }
+        }
     }
 
     private static void transferBetweenAccounts() {
@@ -271,7 +356,6 @@ public class AccountManager {
             System.out.println("Please onboard a user first (option 1).");
             return;
         }
-
         Accounts sourceAccount = null;
         while (sourceAccount == null) {
             System.out.print("Enter source account IBAN: ");
@@ -281,7 +365,6 @@ public class AccountManager {
                 System.out.println("Source account not found. Please try again.");
             }
         }
-
         Accounts destinationAccount = null;
         while (destinationAccount == null) {
             System.out.print("Enter destination account IBAN: ");
@@ -291,7 +374,6 @@ public class AccountManager {
                 System.out.println("Destination account not found. Please try again.");
             }
         }
-
         double amount = 0;
         boolean validAmount = false;
         while (!validAmount) {
@@ -307,13 +389,26 @@ public class AccountManager {
                 System.out.println("Invalid amount format. Please enter a number.");
             }
         }
-
         try {
             sourceAccount.transferBetweenOwnAccounts(amount, destinationAccount);
+            AccountsRepository.updateAccountBalance(sourceAccount.getIban(), sourceAccount.getBalance());
+            AccountsRepository.updateAccountBalance(destinationAccount.getIban(), destinationAccount.getBalance());
+            TransactionsRepository.recordTransaction(
+                    currentUser.getUsername(),
+                    sourceAccount.getIban(),
+                    destinationAccount.getIban(),
+                    "internal-transfer",
+                    amount,
+                    "MDL",
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    "Transfer between own accounts"
+            );
+
         } catch (InvalidAmountException | InsufficientFundsException | AccountNotMatureException e) {
             System.out.println("Transfer failed: " + e.getMessage());
         }
     }
+
 
 
     private static void removeAnAccount() {
