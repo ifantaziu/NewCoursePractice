@@ -35,7 +35,7 @@ public class GeneralAccount extends AbstractAccount implements Accounts {
             return;
         }
 
-        double balance = getBalance() - amount;
+        setBalance(getBalance() - amount);
         destinationAccount.deposit(amount);
         System.out.printf("Transferred %.2f MDL from General Account to target account.%n", amount);
     }

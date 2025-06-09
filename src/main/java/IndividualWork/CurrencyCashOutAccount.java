@@ -40,6 +40,6 @@ public class CurrencyCashOutAccount extends AbstractAccount implements Accounts{
 
     @Override
     public String getAccounttype() {
-        return "cashout account";
+        return "currency";
     }
 }

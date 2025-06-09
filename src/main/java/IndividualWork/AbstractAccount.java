@@ -19,7 +19,7 @@ public abstract class AbstractAccount implements Accounts {
             if (amount <= 0) {
                 throw new InvalidAmountException("Deposit must be greater than zero.");
             }
-            balance += amount;
+            setBalance(getBalance() + amount);
             System.out.printf("Deposited successful %.2f MDL. New balance: %.2f MDL%n", amount, balance);
         } catch (InvalidAmountException e) {
             System.out.println("Error: " + e.getMessage());
@@ -35,7 +35,7 @@ public abstract class AbstractAccount implements Accounts {
             if (amount > balance) {
                 throw new InsufficientFundsException("Not enough funds in card account.");
             }
-            balance -= amount;
+            setBalance(getBalance() - amount);
             System.out.printf("Withdrew successful %.2f MDL. Remaining balance: %.2f MDL%n", amount, balance);
         } catch (InvalidAmountException | InsufficientFundsException e) {
             System.out.println("Error: " + e.getMessage());

@@ -84,7 +84,7 @@ public class SavingsAccount extends AbstractAccount implements Accounts {
             if (amount > getBalance()) {
                 throw new InsufficientFundsException("Not enough funds in savings account.");
             }
-            double balance = getBalance() - amount;
+            setBalance(getBalance() - amount);
             System.out.printf("Withdrew successful %.2f MDL. Remaining balance: %.2f MDL%n", amount, getBalance());
         } catch (InvalidAmountException | InsufficientFundsException | AccountNotMatureException e) {
             System.out.println("Error: " + e.getMessage());

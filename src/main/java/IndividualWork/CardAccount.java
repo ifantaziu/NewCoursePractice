@@ -38,8 +38,10 @@ public class CardAccount extends AbstractAccount implements Accounts {
             if (amount > getBalance()) {
                 throw new InsufficientFundsException("Insufficient funds for payment.");
             }
-            double balance = getBalance() - amount;
-            System.out.printf("Paid successful %.2f MDL to %s. Remaining balance: %.2f MDL%n", amount, merchant, balance);
+
+            setBalance(getBalance() - amount);
+            System.out.printf("Paid successfully %.2f MDL to %s. Remaining balance: %.2f MDL%n",
+                    amount, merchant, getBalance());
         } catch (InvalidAmountException | InsufficientFundsException e) {
             System.out.println("Error: " + e.getMessage());
         }
@@ -66,7 +68,7 @@ public class CardAccount extends AbstractAccount implements Accounts {
             return;
         }
 
-        double balance = getBalance() - amount;
+        setBalance(getBalance() - amount);
         destinationAccount.deposit(amount);
 
         System.out.printf("Transferred %.2f MDL from Card Account to target account.%n", amount);

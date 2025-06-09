@@ -15,6 +15,7 @@ public class IdGenerator {
             case "general" -> prefix = "GEN2251";
             case "savings" -> prefix = "SAV2252";
             case "card" -> prefix = "CARD2259";
+            case "currency" -> prefix = "CCOA2251";
             default -> throw new IllegalArgumentException("Invalid account type for IBAN.");
         }
         return prefix + "-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();

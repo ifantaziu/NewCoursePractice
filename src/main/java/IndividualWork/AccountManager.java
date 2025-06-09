@@ -237,19 +237,26 @@ public class AccountManager {
         }
         System.out.print("Enter the amount to withdraw: ");
         double amount = Double.parseDouble(scanner.nextLine());
-        account.withdrawal(amount);
-
-        AccountsRepository.updateAccountBalance(iban, account.getBalance());
-        TransactionsRepository.recordTransaction(
-                currentUser.getUsername(),
-                iban,
-                null,
-                "withdrawal",
-                amount,
-                "MDL",
-                Timestamp.valueOf(LocalDateTime.now()),
-                "Withdrawal"
-        );
+        try {
+            if (account instanceof SavingsAccount savingsAccount) {
+                savingsAccount.withdrawal(amount);
+            } else {
+                account.withdrawal(amount);
+            }
+            AccountsRepository.updateAccountBalance(iban, account.getBalance());
+            TransactionsRepository.recordTransaction(
+                    currentUser.getUsername(),
+                    iban,
+                    null,
+                    "withdrawal",
+                    amount,
+                    "MDL",
+                    Timestamp.valueOf(LocalDateTime.now()),
+                    "Withdrawal"
+            );
+        } catch (InvalidAmountException | InsufficientFundsException | AccountNotMatureException e) {
+            System.out.println("Error: " + e.getMessage());
+        }
     }
 
     private static Accounts findAccountByIban(String iban) {
