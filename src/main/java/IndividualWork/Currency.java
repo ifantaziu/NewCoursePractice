@@ -3,8 +3,6 @@ package IndividualWork;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
-@Setter
 public enum Currency {
     MDL(1.0),
     USD(18.50),

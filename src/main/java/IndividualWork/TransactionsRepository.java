@@ -16,7 +16,7 @@ public class TransactionsRepository {
 
     public static void recordTransaction(String username, String sourceiban, String destinationiban, String type,
                                          double amount, String currency, Timestamp timestamp, String details) {
-        String sql = "INSERT INTO transactions (username, sourceiban, destinationiban, utype, amount, currency, timestamp, details) " +
+        String sql = "INSERT INTO transactions (username, sourceiban, destinationiban, type, amount, currency, timestamp, details) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, username);

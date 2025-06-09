@@ -312,14 +312,19 @@ public class AccountManager {
         for (Currency currency : Currency.values()) {
             System.out.printf("%s: %.2f MDL%n", currency, currency.getExchangeRate());
         }
-        while (true) {
 
-            AccountsRepository.initializeCurrencyAccounts(currentUser);
-            System.out.print("Select currency to convert FROM (e.g. USD): ");
-            Currency fromCurrency = Currency.valueOf(scanner.nextLine().toUpperCase());
+        AccountsRepository.initializeCurrencyAccounts(currentUser);
 
+        System.out.print("Select currency to convert FROM (e.g. USD): ");
+        String input = scanner.nextLine().trim().toUpperCase();
+
+        try {
+            Currency fromCurrency = Currency.valueOf(input);
             convertFromCurrencyToMDL(currentUser, fromCurrency, scanner);
+        } catch (IllegalArgumentException e) {
+            System.out.println("Invalid currency. Returning to main menu.");
         }
+
     }
 
     public static void convertFromCurrencyToMDL(User user, Currency fromCurrency, Scanner scanner) {

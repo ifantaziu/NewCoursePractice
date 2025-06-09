@@ -50,7 +50,7 @@ public class UserRepository {
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()) {
-                log.info("Login successful. Welcome, {}!");
+                log.info("Login successful. Welcome!");
                 return new User(
                         rs.getString("fullname"),
                         rs.getString("idno"),

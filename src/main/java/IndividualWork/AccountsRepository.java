@@ -21,6 +21,8 @@ public class AccountsRepository {
             iban = IdGenerator.generateIban("savings");
         } else if (account instanceof CardAccount) {
             iban = IdGenerator.generateIban("card");
+        } else if (account instanceof CurrencyCashOutAccount) {
+            iban = IdGenerator.generateIban("currency");
         } else {
             System.out.println("Unknown account type.");
             return account;
@@ -28,7 +30,7 @@ public class AccountsRepository {
 
         String sql = """
                 INSERT INTO accounts 
-                (iban, accounttype, username, balance, fullname, issuecard, deliveryaddress, accountopeningdate, lastinterestdate) 
+                (iban, accounttype, username, balance, fullname, issuecard, carddeliveryaddress, accountopeningdate, lastinterestdate) 
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
                 """;
 
@@ -85,8 +87,8 @@ public class AccountsRepository {
 
                 switch (type) {
                     case "card" -> {
-                        String deliveryAddress = rs.getString("carddeliveryaddress");
-                        CardAccount card = new CardAccount(iban, fullname, balance, deliveryAddress);
+                        String carddeliveryAddress = rs.getString("carddeliveryaddress");
+                        CardAccount card = new CardAccount(iban, fullname, balance, carddeliveryAddress);
                         accounts.add(card);
                     }
                     case "general" -> {
@@ -157,8 +159,8 @@ public class AccountsRepository {
                     case "savings":
                         return new SavingsAccount(iban, fullname, balance);
                     case "card":
-                        String deliveryAddress = rs.getString("deliveryaddress");
-                        return new CardAccount(iban, fullname, balance, deliveryAddress);
+                        String carddeliveryAddress = rs.getString("carddeliveryaddress");
+                        return new CardAccount(iban, fullname, balance, carddeliveryAddress);
                     case "currency":
                         String currencyStr = rs.getString("currency");
                         Currency currency = Currency.valueOf(currencyStr);
@@ -212,7 +214,7 @@ public class AccountsRepository {
         Collection<Accounts> allAccounts = AccountsRepository.getAllAccountsForUser(user.getUsername());
         for (Accounts account : allAccounts) {
             String type = account.getAccounttype().toLowerCase();
-            if (type.equals("general") || type.equals("savings") || type.equals("card")) {
+            if (type.equals("general") || type.equals("savings") || type.equals("card")|| type.equals("currency")) {
                 return account;
             }
         }
