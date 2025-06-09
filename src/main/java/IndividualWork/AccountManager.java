@@ -87,7 +87,7 @@ public class AccountManager {
     private static void onboardNewUser() {
         currentUser = onboarding.onboardNewUser();
         if (currentUser != null) {
-            logger.info("New user onboarded: " + currentUser);
+            logger.info("New user onboarded:\n" + currentUser);
         } else {
             logger.error("User onboarding failed.");
         }

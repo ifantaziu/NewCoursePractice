@@ -11,7 +11,7 @@ public class CurrencyCashOutAccount extends AbstractAccount implements Accounts{
         this.currency = currency;
     }
 
-      @Override
+    @Override
     public void withdrawal(double amount) throws InvalidAmountException, InsufficientFundsException {
         if (amount <= 0) {
             throw new InvalidAmountException("Withdrawal amount must be greater than zero.");
@@ -43,4 +43,3 @@ public class CurrencyCashOutAccount extends AbstractAccount implements Accounts{
         return "cashout account";
     }
 }
-

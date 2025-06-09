@@ -10,16 +10,14 @@ public class User {
     private final String username;
     private final String password;
 
-    public User(String fullName, String idno, String clientid, String email, String phone, String username, String password) {
-        this.fullname = fullName;
+    public User(String username, String fullname, String idno, String email, String phone, String password, String clientid) {
+        this.username = username;
+        this.fullname = fullname;
         this.idno = idno;
-        this.clientid = IdGenerator.generateClientid();
         this.email = email;
         this.phone = phone;
-
-        this.username = username;
         this.password = password;
-
+        this.clientid = IdGenerator.generateClientid();
     }
 
     public static String getFullname() {

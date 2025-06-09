@@ -143,11 +143,7 @@ public class Onboarding {
         System.out.print("Password: ");
         String password = scanner.nextLine();
 
-       return UserRepository.login(username, password);
+        return UserRepository.login(username, password);
 
     }
 }
-
-
-
-
