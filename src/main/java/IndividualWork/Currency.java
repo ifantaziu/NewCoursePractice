@@ -1,5 +1,10 @@
 package IndividualWork;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public enum Currency {
     MDL(1.0),
     USD(18.50),
@@ -9,19 +14,23 @@ public enum Currency {
 
     private final double exchangeRate;
 
-    Currency(double exchangeRate) {
+    Currency(double exchangeRate)
+    {
         this.exchangeRate = exchangeRate;
     }
 
-    public double getExchangeRate() {
+    public double getExchangeRate()
+    {
         return exchangeRate;
     }
 
-    public double convertToCurrency(double amountMDL) {
+    public double convertToCurrency(double amountMDL)
+    {
         return amountMDL / exchangeRate;
     }
 
-    public double convertToMDL(double amountCurrency) {
+    public double convertToMDL(double amountCurrency)
+    {
         return amountCurrency * exchangeRate;
     }
 
