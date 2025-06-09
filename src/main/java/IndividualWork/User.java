@@ -1,8 +1,13 @@
 package IndividualWork;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class User {
 
-    private static String fullname;
+    private  String fullname;
     private final String idno;
     private final String clientid;
     private final String email;
@@ -20,7 +25,7 @@ public class User {
         this.clientid = IdGenerator.generateClientid();
     }
 
-    public static String getFullname() {
+    public  String getFullname() {
         return fullname;
     }
 
