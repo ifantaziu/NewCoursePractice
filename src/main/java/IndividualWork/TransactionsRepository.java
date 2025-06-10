@@ -76,7 +76,7 @@ public class TransactionsRepository {
     private static String formatTransaction(ResultSet rs) throws SQLException {
         return String.format("[%s] %s | From: %s | To: %s | Amount: %.2f %s | Desc: %s",
                 rs.getTimestamp("timestamp"),
-                rs.getString("transactiontype"),
+                rs.getString("type"),
                 rs.getString("sourceiban") != null ? rs.getString("sourceiban") : "-",
                 rs.getString("destinationiban") != null ? rs.getString("destinationiban") : "-",
                 rs.getDouble("amount"),

@@ -52,13 +52,13 @@ public class UserRepository {
             if (rs.next()) {
                 log.info("Login successful. Welcome!");
                 return new User(
+                        rs.getString("username"),
                         rs.getString("fullname"),
                         rs.getString("idno"),
-                        rs.getString("clientid"),
                         rs.getString("email"),
                         rs.getString("phone"),
-                        rs.getString("username"),
-                        rs.getString("password")
+                        rs.getString("password"),
+                        rs.getString("clientid")
                 );
 
             } else {

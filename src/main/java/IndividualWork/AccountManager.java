@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.Scanner;
 
 import static IndividualWork.AccountsRepository.findMDLAccount;
@@ -43,8 +44,9 @@ public class AccountManager {
                         case 8 -> initiateCurrencyExchange();
                         case 9 -> withdrawFromCashOutAccount();
                         case 10 -> showAccountList();
-                        case 11 -> removeAnAccount();
-                        case 12 -> {
+                        case 11 -> getTransactionsReport();
+                        case 12 -> removeAnAccount();
+                        case 13 -> {
                             connection.close();
                             exit();
                         }
@@ -70,8 +72,9 @@ public class AccountManager {
         System.out.println("8. Currency Exchange");
         System.out.println("9. Withdraw from Cash-Out Account");
         System.out.println("10. Show my Accounts");
-        System.out.println("11. Remove an Account");
-        System.out.println("12. Exit");
+        System.out.println("11. Show transactions Report");
+        System.out.println("12. Remove an Account");
+        System.out.println("13. Exit");
         System.out.print("Please enter your choice: ");
     }
 
@@ -103,7 +106,7 @@ public class AccountManager {
     private static void openNewAccount() {
         if (currentUser == null) {
 
-            System.out.println("Please onboard a user first (option 1).");
+            System.out.println("Please onboard a user first (option 0).");
             return;
         }
 
@@ -146,7 +149,46 @@ public class AccountManager {
     }
 
     private static void showAccountList() {
-        AccountsRepository.getAllAccountsForUser(currentUser.getUsername());
+        Collection<Accounts> accounts = AccountsRepository.getAllAccountsForUser(currentUser.getUsername());
+
+        for (Accounts account : accounts) {
+            System.out.println(account); // poți personaliza afisajul
+        }
+    }
+
+    private static void getTransactionsReport() {
+
+        while (true) {
+            System.out.println("\nChoose how do you need the Report to be generated:");
+            System.out.println("\ntype 'IBAN' if you need a report for a specific Account");
+            System.out.println("\ntype 'USER' if you need a report for all your Accounts\"");
+            System.out.print("\nor type EXIT to return to Account Manager Menu): ");
+            String input = scanner.nextLine().trim().toUpperCase();
+
+            if (input.equals("EXIT")) {
+                System.out.println("Returning to main menu...");
+                break;
+            } else if (input.equals("IBAN")) {
+                System.out.print("Enter the account IBAN: ");
+                String iban = scanner.nextLine();
+                Accounts account = findAccountByIban(iban);
+                if (account == null) {
+                    System.out.println("Account not found.");
+                    return;
+                }
+                TransactionsRepository.getTransactionsByIban(iban);
+            } else if (input.equals("USER")) {
+                System.out.print("Enter your username: ");
+                String username = scanner.nextLine();
+                User user = UserRepository.getUserByUsername(username);
+                if (user == null) {
+                    System.out.println("User not found.");
+                    return;
+                }
+                TransactionsRepository.getTransactionsByUser(username);
+            }
+
+        }
     }
 
     private static void makePayment() {
@@ -159,7 +201,6 @@ public class AccountManager {
             System.out.print("Enter the merchant name: ");
             String merchant = scanner.nextLine();
             cardAccount.makePayment(amount, merchant);
-
             AccountsRepository.updateAccountBalance(iban, cardAccount.getBalance());
             TransactionsRepository.recordTransaction(
                     currentUser.getUsername(),
@@ -313,18 +354,19 @@ public class AccountManager {
             System.out.printf("%s: %.2f MDL%n", currency, currency.getExchangeRate());
         }
 
+
         AccountsRepository.initializeCurrencyAccounts(currentUser);
 
-        System.out.print("Select currency to convert FROM (e.g. USD): ");
-        String input = scanner.nextLine().trim().toUpperCase();
+        String answer;
+        do {
+            System.out.print("Select currency to convert FROM (e.g. USD): ");
+            Currency fromCurrency = Currency.valueOf(scanner.nextLine().toUpperCase());
 
-        try {
-            Currency fromCurrency = Currency.valueOf(input);
             convertFromCurrencyToMDL(currentUser, fromCurrency, scanner);
-        } catch (IllegalArgumentException e) {
-            System.out.println("Invalid currency. Returning to main menu.");
-        }
 
+            System.out.print("Do you want to convert another currency? (yes/no): ");
+            answer = scanner.nextLine().trim().toLowerCase();
+        } while (answer.equals("yes"));
     }
 
     public static void convertFromCurrencyToMDL(User user, Currency fromCurrency, Scanner scanner) {
@@ -405,6 +447,8 @@ public class AccountManager {
             sourceAccount.transferBetweenOwnAccounts(amount, destinationAccount);
             AccountsRepository.updateAccountBalance(sourceAccount.getIban(), sourceAccount.getBalance());
             AccountsRepository.updateAccountBalance(destinationAccount.getIban(), destinationAccount.getBalance());
+            System.out.println("Updating source account balance for IBAN: " + sourceAccount.getIban() + " with new balance: " + sourceAccount.getBalance());
+            System.out.println("Updating destination account balance for IBAN: " + destinationAccount.getIban() + " with new balance: " + destinationAccount.getBalance());
             TransactionsRepository.recordTransaction(
                     currentUser.getUsername(),
                     sourceAccount.getIban(),
@@ -420,7 +464,6 @@ public class AccountManager {
             System.out.println("Transfer failed: " + e.getMessage());
         }
     }
-
 
 
     private static void removeAnAccount() {

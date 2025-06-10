@@ -38,4 +38,6 @@ public class Validator {
     public static boolean isPhoneTaken(String phone) {
         return UserRepository.getAllUsers().stream().anyMatch(u -> u.getPhone().equals(phone));
     }
+
+
 }

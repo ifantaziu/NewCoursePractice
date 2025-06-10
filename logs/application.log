@@ -31,3 +31,4 @@ Phone: 098888888
 
 2025-06-03 01:38:08 INFO  [main] IndividualWork.AccountManager - Account created successfully:
 
+2025-06-10 20:08:00 INFO  [main] IndividualWork.UserRepository - Login successful. Welcome!

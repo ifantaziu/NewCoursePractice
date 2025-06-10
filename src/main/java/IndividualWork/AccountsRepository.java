@@ -176,6 +176,10 @@ public class AccountsRepository {
     }
     public static void initializeCurrencyAccounts(User user) {
         for (Currency currency : Currency.values()) {
+            if (doesCurrencyAccountExist(user.getUsername(), currency.name())) {
+                continue;
+            }
+
             CurrencyCashOutAccount account = new CurrencyCashOutAccount(currency, 0.0);
             String iban = account.getIban();
 
@@ -192,6 +196,20 @@ public class AccountsRepository {
             } catch (SQLException e) {
                 System.out.println("Failed to initialize currency account: " + e.getMessage());
             }
+        }
+    }
+
+    public static boolean doesCurrencyAccountExist(String username, String currency) {
+        String sql = "SELECT 1 FROM accounts WHERE username = ? AND currency = ?";
+        try (PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, username);
+            ps.setString(2, currency);
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
         }
     }
     public static CurrencyCashOutAccount getCurrencyCashOutAccount(User user, Currency currency) {
