@@ -1,8 +1,8 @@
 package IndividualWork;
 
 import java.sql.*;
-import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -42,8 +42,8 @@ public class TransactionsRepository {
         }
     }
 
-    public static List<String> getTransactionsByIban(String iban) {
-        List<String> transactions = new ArrayList<>();
+    public static Collection<String> getTransactionsByIban(String iban) {
+        Collection<String> transactions = new ArrayList<>();
         String sql = "SELECT * FROM transactions WHERE sourceiban = ? OR destinationiban = ? ORDER BY timestamp DESC";
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, iban);

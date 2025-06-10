@@ -152,7 +152,7 @@ public class AccountManager {
         Collection<Accounts> accounts = AccountsRepository.getAllAccountsForUser(currentUser.getUsername());
 
         for (Accounts account : accounts) {
-            System.out.println(account); // poți personaliza afisajul
+            System.out.println(account);
         }
     }
 
@@ -176,7 +176,10 @@ public class AccountManager {
                     System.out.println("Account not found.");
                     return;
                 }
-                TransactionsRepository.getTransactionsByIban(iban);
+                Collection<String> transactions = TransactionsRepository.getTransactionsByIban(iban);
+                for (String report : transactions) {
+                    System.out.println(report);
+                }
             } else if (input.equals("USER")) {
                 System.out.print("Enter your username: ");
                 String username = scanner.nextLine();
@@ -185,7 +188,10 @@ public class AccountManager {
                     System.out.println("User not found.");
                     return;
                 }
-                TransactionsRepository.getTransactionsByUser(username);
+                Collection<String> transactions = TransactionsRepository.getTransactionsByUser(username);
+                for (String report : transactions) {
+                    System.out.println(report);
+                }
             }
 
         }
