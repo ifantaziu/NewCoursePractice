@@ -1,9 +1,20 @@
-### IntelliJ IDEA ###
+# Maven build directory
+/target/
+
+# IntelliJ IDEA
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
+*.iml
 
-### Eclipse ###
+# Compiled Java files
+*.class
+
+# Logs
+logs/
+*.log
+
+# Eclipse
 .apt_generated
 .classpath
 .factorypath
@@ -15,17 +26,15 @@ bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
 
-### NetBeans ###
+# NetBeans
 /nbproject/private/
 /nbbuild/
 /dist/
 /nbdist/
 /.nb-gradle/
 
-### VS Code ###
+# VS Code
 .vscode/
 
-### Mac OS ###
+# Mac OS
 .DS_Store
-/target/git 
-logs/
